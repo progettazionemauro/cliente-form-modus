@@ -42,11 +42,11 @@
   <p id="status" class="muted"></p>
 
   <script>
-    // 1) Inserisci qui i tuoi valori
-    WEB_APP_URL="https://script.google.com/macros/s/AKfycbysG3O_nsBSXv4AdrHjyRfXBwIsPQ7J-pKHn7vV3ZwVdmyTFa5V0ai0pYxV48TV7RTd/exec"
-    API_KEY="Djungo-Test-2026-01-17-chiave-lunga-XYZ"
+    // Config
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbysG3O_nsBSXv4AdrHjyRfXBwIsPQ7J-pKHn7vV3ZwVdmyTFa5V0ai0pYxV48TV7RTd/exec";
+    const API_KEY = "Djungo-Test-2026-01-17-chiave-lunga-XYZ";
 
-    // 2) Timestamp di apertura pagina (anti-bot “too fast”)
+    // Timestamp di apertura pagina (anti-bot “too fast”)
     const pageLoadTs = Date.now();
 
     const form = document.getElementById("f");
@@ -71,6 +71,7 @@
       const name = (fd.get("name") || "").toString().trim();
       const email = (fd.get("email") || "").toString().trim();
       const message = (fd.get("message") || "").toString().trim();
+      const hp = (fd.get("hp") || "").toString();
 
       if (!name || !email || !message) {
         setStatus("Compila tutti i campi.", "err");
@@ -78,10 +79,11 @@
         return;
       }
 
+      // Payload per Apps Script
       const payload = {
         apiKey: API_KEY,
         ts: pageLoadTs,
-        hp: (fd.get("hp") || "").toString(),
+        hp: hp,
         name,
         email,
         message,
@@ -89,21 +91,18 @@
       };
 
       try {
-        const res = await fetch(WEB_APP_URL, {
+        // IMPORTANTISSIMO:
+        // - mode: "no-cors" evita l’errore "Failed to fetch" dovuto a CORS
+        // - Content-Type text/plain evita preflight CORS (application/json spesso lo innesca)
+        await fetch(WEB_APP_URL, {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          mode: "no-cors",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
           body: JSON.stringify(payload)
         });
 
-        const data = await res.json().catch(() => null);
-
-        if (!res.ok || !data || !data.ok) {
-          const errMsg = (data && data.error) ? data.error : ("HTTP " + res.status);
-          setStatus("Errore invio: " + errMsg, "err");
-          btn.disabled = false;
-          return;
-        }
-
+        // Con no-cors la risposta è "opaque": non possiamo leggere JSON di ritorno.
+        // Quindi, se non va in eccezione, consideriamo l’invio riuscito.
         setStatus("Inviato correttamente.", "ok");
         form.reset();
 
