@@ -3,98 +3,294 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Inserimento dati</title>
+  <title>ISO 9001 - Contesto & SWOT Input</title>
   <style>
-    body { font-family: Arial, sans-serif; max-width: 720px; margin: 40px auto; padding: 0 16px; }
-    label { display:block; margin: 12px 0 6px; }
-    input, textarea { width: 100%; padding: 10px; box-sizing: border-box; }
-    textarea { min-height: 140px; }
-    button { padding: 10px 14px; margin-top: 14px; }
-    .muted { color: #666; font-size: 0.9rem; }
-    .ok { color: #0a6; }
-    .err { color: #b00; }
+    body { font-family: Arial, sans-serif; max-width: 920px; margin: 36px auto; padding: 0 16px; }
+    h1 { margin: 0 0 6px; }
+    .muted { color: #666; font-size: 0.95rem; margin: 0 0 18px; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    @media (max-width: 760px) { .grid { grid-template-columns: 1fr; } }
+
+    label { display:block; margin: 10px 0 6px; font-weight: 600; }
+    input, select, textarea {
+      width: 100%;
+      padding: 10px;
+      box-sizing: border-box;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 14px;
+    }
+    textarea { min-height: 120px; resize: vertical; }
+    .row { margin-bottom: 10px; }
+
+    .card {
+      border: 1px solid #e5e5e5;
+      border-radius: 10px;
+      padding: 14px;
+      background: #fafafa;
+    }
+
+    .actions { margin-top: 14px; display: flex; gap: 10px; align-items: center; }
+    button {
+      padding: 10px 14px;
+      border: 0;
+      border-radius: 8px;
+      background: #1a73e8;
+      color: #fff;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    button:disabled { opacity: 0.6; cursor: not-allowed; }
+
+    .ok { color: #0a6; font-weight: 600; }
+    .err { color: #b00; font-weight: 600; }
     .hidden { display:none; }
+    .hint { font-size: 0.9rem; color: #555; margin-top: 6px; }
+    .pill {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 999px;
+      background: #eee;
+      font-size: 12px;
+      margin-left: 8px;
+      color: #333;
+    }
   </style>
 </head>
+
 <body>
-  <h1>Invio richiesta</h1>
-  <p class="muted">Compila i campi e invia. I dati verranno registrati automaticamente.</p>
+  <h1>ISO 9001 – Raccolta input (Contesto + SWOT)</h1>
+  <p class="muted">
+    Inserisci i dati; l’invio registra una riga nel foglio Google. (Livello 1: validazioni base, honeypot, timestamp)
+  </p>
 
   <form id="f" autocomplete="on">
-    <label>Nome e Cognome</label>
-    <input name="name" maxlength="80" required />
+    <div class="grid">
+      <div class="card">
+        <h3 style="margin:0 0 10px;">Contesto</h3>
 
-    <label>Email</label>
-    <input name="email" type="email" maxlength="120" required />
+        <div class="row">
+          <label for="dataRilevazione">Data rilevazione (gg/mm/aa)</label>
+          <input
+            id="dataRilevazione"
+            name="dataRilevazione"
+            inputmode="numeric"
+            placeholder="es. 17/01/26"
+            pattern="^(0[1-9]|[12][0-9]|3[01])/(0[1-9]|1[0-2])/[0-9]{2}$"
+            required
+          />
+          <div class="hint">Formato richiesto: gg/mm/aa (es. 05/02/26).</div>
+        </div>
 
-    <label>Messaggio</label>
-    <textarea name="message" maxlength="2000" required></textarea>
+        <div class="row">
+          <label for="areaContesto">Area contesto</label>
+          <select id="areaContesto" name="areaContesto" required>
+            <option value="" selected disabled>Seleziona…</option>
+            <option>ECONOMICO</option>
+            <option>TECNOLOGICO</option>
+            <option>LEGALE</option>
+            <option>POLITICO / REGOLATORIO</option>
+            <option>SOCIALE</option>
+            <option>AMBIENTALE / CLIMATICO</option>
+            <option>MERCATO / DOMANDA</option>
+            <option>VENDITE E CUSTOMER CARE</option>
+            <option>AREA FINANZA</option>
+            <option>RISORSE UMANE</option>
+            <option>INFRASTRUTTURE / ASSET</option>
+            <option>SUPPLY CHAIN / FORNITORI</option>
+            <option>QUALITÀ E PROCESSI</option>
+            <option>CYBERSECURITY / IT</option>
+            <option>LOGISTICA</option>
+            <option>REPUTAZIONE / BRAND</option>
+            <option>CONCORRENZA</option>
+            <option>INNOVAZIONE / R&D</option>
+            <option>COMPLIANCE / ETICA</option>
+            <option>SALUTE E SICUREZZA (OHS)</option>
+          </select>
+        </div>
 
-    <!-- Honeypot: deve restare vuoto (non dirlo all’utente) -->
-    <div class="hidden">
-      <label>Se sei umano lascia vuoto</label>
-      <input name="hp" tabindex="-1" autocomplete="off" />
+        <div class="row">
+          <label for="attivita">Attività (libero)</label>
+          <textarea id="attivita" name="attivita" placeholder="Descrivi l’attività / processo / evento osservato…" required></textarea>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3 style="margin:0 0 10px;">Parti interessate & Obiettivo</h3>
+
+        <div class="row">
+          <label for="partiInteressate">Parti interessate</label>
+          <select id="partiInteressate" name="partiInteressate" required>
+            <option value="" selected disabled>Seleziona…</option>
+            <option>CLIENTI</option>
+            <option>PROSPECT / MERCATO POTENZIALE</option>
+            <option>COMPETITORS</option>
+            <option>FORNITORI</option>
+            <option>PARTNER / ALLEANZE</option>
+            <option>SOCIETÀ DI INGEGNERIA</option>
+            <option>STUDI DI ARCHITETTURA</option>
+            <option>CONSULENTI</option>
+            <option>ISTITUTI DI CREDITO / BANCHE</option>
+            <option>AGENZIA DELLE ENTRATE</option>
+            <option>INAIL</option>
+            <option>ENTI REGOLATORI / PA</option>
+            <option>ORGANISMI DI CERTIFICAZIONE</option>
+            <option>ASSICURAZIONI</option>
+            <option>DIPENDENTI</option>
+            <option>COLLABORATORI / FREELANCE</option>
+            <option>PROPRIETÀ / SOCI</option>
+            <option>COMUNITÀ LOCALE</option>
+            <option>ASSOCIAZIONI DI CATEGORIA</option>
+            <option>MEDIA / OPINIONE PUBBLICA</option>
+          </select>
+        </div>
+
+        <div class="row">
+          <label for="obiettivo">Obiettivo (libero)</label>
+          <textarea id="obiettivo" name="obiettivo" placeholder="Definisci l’obiettivo collegato al fattore (azione, risultato atteso, KPI, ecc.)" required></textarea>
+        </div>
+
+        <div class="row">
+          <label for="fattoreAnte">Fattore (ante) <span class="pill" id="pillFactor">—</span></label>
+          <select id="fattoreAnte" name="fattoreAnte" required>
+            <option value="" selected disabled>Seleziona…</option>
+
+            <!-- Minaccia (E) -->
+            <option value="25|BASSA MINACCIA (E)">25 - BASSA MINACCIA (E)</option>
+            <option value="50|MEDIA MINACCIA (E)">50 - MEDIA MINACCIA (E)</option>
+            <option value="75|ESTREMA MINACCIA (E)">75 - ESTREMA MINACCIA (E)</option>
+
+            <!-- Opportunità (E) -->
+            <option value="25|BASSA OPPORTUNITA (E)">25 - BASSA OPPORTUNITA (E)</option>
+            <option value="50|MEDIA OPPORTUNITA (E)">50 - MEDIA OPPORTUNITA (E)</option>
+            <option value="100|ESTREMA OPPORTUNITA (E)">100 - ESTREMA OPPORTUNITA (E)</option>
+
+            <!-- Debolezza (I) -->
+            <option value="25|BASSA DEBOLEZZA (I)">25 - BASSA DEBOLEZZA (I)</option>
+            <option value="50|MEDIA DEBOLEZZA (I)">50 - MEDIA DEBOLEZZA (I)</option>
+            <option value="100|ESTREMA DEBOLEZZA (I)">100 - ESTREMA DEBOLEZZA (I)</option>
+
+            <!-- Forza (I) -->
+            <option value="25|BASSA FORZA (I)">25 - BASSA FORZA (I)</option>
+            <option value="50|MEDIA FORZA (I)">50 - MEDIA FORZA (I)</option>
+            <option value="100|ESTREMA FORZA (I)">100 - ESTREMA FORZA (I)</option>
+          </select>
+
+          <div class="hint">
+            Il valore numerico (25/50/75/100) viene inviato come percentuale per i calcoli.
+          </div>
+        </div>
+
+        <!-- Honeypot -->
+        <div class="hidden">
+          <label>Se sei umano lascia vuoto</label>
+          <input name="hp" tabindex="-1" autocomplete="off" />
+        </div>
+
+        <div class="actions">
+          <button id="btn" type="submit">Invia</button>
+          <span id="status" class="muted"></span>
+        </div>
+      </div>
     </div>
-
-    <button id="btn" type="submit">Invia</button>
   </form>
 
-  <p id="status" class="muted"></p>
-
   <script>
-    // Config
-    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxPHs61hB0PrSufRZ_n5M6eFLoz2uEdaw6QRRKv7e34EQfjRpINaxIvWvPcx4atBZ5s/exec";
-    
+    // ===== CONFIG DA IMPOSTARE =====
+    // Incolla qui la tua Web App URL (/exec) corretta
+    const WEB_APP_URL = "INCOLLA_LA_TUA_WEB_APP_URL/exec";
     const API_KEY = "Djungo-Test-2026-01-17-chiave-lunga-XYZ";
 
-    // Timestamp di apertura pagina (anti-bot “too fast”)
+    // Timestamp pagina (anti-bot “too fast” lato server)
     const pageLoadTs = Date.now();
 
     const form = document.getElementById("f");
     const statusEl = document.getElementById("status");
     const btn = document.getElementById("btn");
+    const fattoreAnteEl = document.getElementById("fattoreAnte");
+    const pillFactorEl = document.getElementById("pillFactor");
 
     function setStatus(msg, cls) {
       statusEl.className = cls || "muted";
       statusEl.textContent = msg;
     }
 
+    // UI: pill riassuntiva fattore
+    fattoreAnteEl.addEventListener("change", () => {
+      const v = (fattoreAnteEl.value || "");
+      if (!v) { pillFactorEl.textContent = "—"; return; }
+      const [pct, label] = v.split("|");
+      pillFactorEl.textContent = `${pct}% • ${label}`;
+    });
+
+    // Utility: validazione data gg/mm/aa
+    function isValidDateDDMMYY(s) {
+      // regex già su input, ma qui aggiungiamo controllo logico
+      const m = /^(\d{2})\/(\d{2})\/(\d{2})$/.exec(s);
+      if (!m) return false;
+      const dd = Number(m[1]), mm = Number(m[2]), yy = Number(m[3]);
+      if (mm < 1 || mm > 12) return false;
+      if (dd < 1 || dd > 31) return false;
+      // controlli semplici mese/giorno
+      const daysInMonth = [31, (yy % 4 === 0 ? 29 : 28), 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+      if (dd > daysInMonth[mm - 1]) return false;
+      return true;
+    }
+
     form.addEventListener("submit", async (ev) => {
       ev.preventDefault();
-
-      // Anti doppio invio
       btn.disabled = true;
       setStatus("Invio in corso...", "muted");
 
       const fd = new FormData(form);
 
-      // Validazioni lato client (extra)
-      const name = (fd.get("name") || "").toString().trim();
-      const email = (fd.get("email") || "").toString().trim();
-      const message = (fd.get("message") || "").toString().trim();
+      const dataRilevazione = (fd.get("dataRilevazione") || "").toString().trim();
+      const areaContesto = (fd.get("areaContesto") || "").toString().trim();
+      const attivita = (fd.get("attivita") || "").toString().trim();
+      const partiInteressate = (fd.get("partiInteressate") || "").toString().trim();
+      const obiettivo = (fd.get("obiettivo") || "").toString().trim();
+      const fattoreAnte = (fd.get("fattoreAnte") || "").toString().trim();
       const hp = (fd.get("hp") || "").toString();
 
-      if (!name || !email || !message) {
-        setStatus("Compila tutti i campi.", "err");
+      // Validazioni client
+      if (!dataRilevazione || !isValidDateDDMMYY(dataRilevazione)) {
+        setStatus("Data non valida. Usa formato gg/mm/aa (es. 17/01/26).", "err");
+        btn.disabled = false;
+        return;
+      }
+      if (!areaContesto || !attivita || !partiInteressate || !obiettivo || !fattoreAnte) {
+        setStatus("Compila tutti i campi obbligatori.", "err");
         btn.disabled = false;
         return;
       }
 
-      // Payload per Apps Script
+      // Parsing fattore: "pct|LABEL"
+      const [factorPctStr, factorLabel] = fattoreAnte.split("|");
+      const factorPct = Number(factorPctStr || 0);
+
       const payload = {
         apiKey: API_KEY,
         ts: pageLoadTs,
         hp: hp,
-        name,
-        email,
-        message,
+
+        // Campi ISO 9001
+        dataRilevazione,
+        areaContesto,
+        attivita,
+        partiInteressate,
+        obiettivo,
+
+        // Fattore
+        factorPct,       // numero (25/50/75/100)
+        factorLabel,     // testo categoria
+        fattoreAnteRaw: fattoreAnte, // utile per audit/debug
+
+        // Meta
         userAgent: navigator.userAgent
       };
 
       try {
-        // IMPORTANTISSIMO:
-        // - mode: "no-cors" evita l’errore "Failed to fetch" dovuto a CORS
-        // - Content-Type text/plain evita preflight CORS (application/json spesso lo innesca)
+        // no-cors: non leggiamo risposta; consideriamo OK se non lancia eccezioni
         await fetch(WEB_APP_URL, {
           method: "POST",
           mode: "no-cors",
@@ -102,10 +298,9 @@
           body: JSON.stringify(payload)
         });
 
-        // Con no-cors la risposta è "opaque": non possiamo leggere JSON di ritorno.
-        // Quindi, se non va in eccezione, consideriamo l’invio riuscito.
         setStatus("Inviato correttamente.", "ok");
         form.reset();
+        pillFactorEl.textContent = "—";
 
       } catch (e) {
         setStatus("Errore di rete: " + e, "err");
