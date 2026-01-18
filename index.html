@@ -3,36 +3,31 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>ISO 9001 - Contesto & SWOT Input</title>
+  <title>ISO 9001 - Contesto & SWOT (Grid)</title>
   <style>
-    body { font-family: Arial, sans-serif; max-width: 920px; margin: 36px auto; padding: 0 16px; }
+    body { font-family: Arial, sans-serif; max-width: 1200px; margin: 28px auto; padding: 0 16px; }
     h1 { margin: 0 0 6px; }
-    .muted { color: #666; font-size: 0.95rem; margin: 0 0 18px; }
-    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-    @media (max-width: 760px) { .grid { grid-template-columns: 1fr; } }
+    .muted { color: #666; font-size: 0.95rem; margin: 0 0 16px; }
 
+    .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    @media (max-width: 920px) { .grid2 { grid-template-columns: 1fr; } }
+
+    .card { border: 1px solid #e5e5e5; border-radius: 10px; padding: 14px; background: #fafafa; }
     label { display:block; margin: 10px 0 6px; font-weight: 600; }
     input, select, textarea {
       width: 100%;
-      padding: 10px;
+      padding: 9px;
       box-sizing: border-box;
       border: 1px solid #ccc;
       border-radius: 6px;
       font-size: 14px;
+      background: #fff;
     }
-    textarea { min-height: 120px; resize: vertical; }
-    .row { margin-bottom: 10px; }
+    textarea { min-height: 90px; resize: vertical; }
 
-    .card {
-      border: 1px solid #e5e5e5;
-      border-radius: 10px;
-      padding: 14px;
-      background: #fafafa;
-    }
-
-    .actions { margin-top: 14px; display: flex; gap: 10px; align-items: center; }
+    .actions { margin-top: 12px; display:flex; gap: 10px; align-items:center; }
     button {
-      padding: 10px 14px;
+      padding: 9px 12px;
       border: 0;
       border-radius: 8px;
       background: #1a73e8;
@@ -40,139 +35,118 @@
       cursor: pointer;
       font-weight: 600;
     }
+    button.secondary { background: #666; }
+    button.danger { background: #b00; }
     button:disabled { opacity: 0.6; cursor: not-allowed; }
 
     .ok { color: #0a6; font-weight: 600; }
     .err { color: #b00; font-weight: 600; }
-    .hidden { display:none; }
+
+    .pill { display:inline-block; padding: 4px 8px; border-radius: 999px; background:#eee; font-size: 12px; margin-left: 8px; color:#333; }
     .hint { font-size: 0.9rem; color: #555; margin-top: 6px; }
-    .pill {
-      display: inline-block;
-      padding: 4px 8px;
-      border-radius: 999px;
-      background: #eee;
-      font-size: 12px;
-      margin-left: 8px;
-      color: #333;
-    }
+
+    table { width: 100%; border-collapse: collapse; margin-top: 14px; background: #fff; }
+    th, td { border: 1px solid #e3e3e3; padding: 8px; vertical-align: top; }
+    th { background: #f2f2f2; text-align: left; position: sticky; top: 0; z-index: 1; }
+    td small { color:#666; }
+    .nowrap { white-space: nowrap; }
+    .row-actions { display:flex; gap:8px; }
+    .cell-input { width: 100%; padding: 6px; border: 1px solid #ccc; border-radius: 6px; }
+    .hidden { display:none; }
+
+    .toolbar { display:flex; gap:10px; align-items:center; flex-wrap: wrap; margin-top: 10px; }
+    .toolbar input { max-width: 320px; }
   </style>
 </head>
 
 <body>
-  <h1>ISO 9001 – Raccolta input (Contesto + SWOT)</h1>
-  <p class="muted">
-    Inserisci i dati; l’invio registra una riga nel foglio Google. (Livello 1: validazioni base, honeypot, timestamp)
-  </p>
+  <h1>ISO 9001 – Contesto & SWOT (Grid)</h1>
+  <p class="muted">Inserisci, visualizza e modifica righe. Scenario 2 (web “tipo Excel”).</p>
 
-  <form id="f" autocomplete="on">
-    <div class="grid">
-      <div class="card">
-        <h3 style="margin:0 0 10px;">Contesto</h3>
+  <div class="grid2">
+    <div class="card">
+      <h3 style="margin:0 0 10px;">Nuova riga</h3>
 
-        <div class="row">
-          <label for="dataRilevazione">Data rilevazione (calendario)</label>
-          <input id="dataRilevazione" name="dataRilevazione" type="date" required />
-          <div class="hint">Seleziona la data dal calendario (salviamo su foglio in formato gg/mm/aa).</div>
-        </div>
+      <form id="f" autocomplete="on">
+        <label for="dataRilevazione">Data rilevazione</label>
+        <input id="dataRilevazione" name="dataRilevazione" type="date" required />
+        <div class="hint">Seleziona la data dal calendario (salviamo su foglio in formato gg/mm/aa).</div>
 
-        <div class="row">
-          <label for="areaContesto">Area contesto</label>
-          <select id="areaContesto" name="areaContesto" required>
-            <option value="" selected disabled>Seleziona…</option>
-            <option>ECONOMICO</option>
-            <option>TECNOLOGICO</option>
-            <option>LEGALE</option>
-            <option>POLITICO / REGOLATORIO</option>
-            <option>SOCIALE</option>
-            <option>AMBIENTALE / CLIMATICO</option>
-            <option>MERCATO / DOMANDA</option>
-            <option>VENDITE E CUSTOMER CARE</option>
-            <option>AREA FINANZA</option>
-            <option>RISORSE UMANE</option>
-            <option>INFRASTRUTTURE / ASSET</option>
-            <option>SUPPLY CHAIN / FORNITORI</option>
-            <option>QUALITÀ E PROCESSI</option>
-            <option>CYBERSECURITY / IT</option>
-            <option>LOGISTICA</option>
-            <option>REPUTAZIONE / BRAND</option>
-            <option>CONCORRENZA</option>
-            <option>INNOVAZIONE / R&D</option>
-            <option>COMPLIANCE / ETICA</option>
-            <option>SALUTE E SICUREZZA (OHS)</option>
-          </select>
-        </div>
+        <label for="areaContesto">Area contesto</label>
+        <select id="areaContesto" name="areaContesto" required>
+          <option value="" selected disabled>Seleziona…</option>
+          <option>ECONOMICO</option>
+          <option>TECNOLOGICO</option>
+          <option>LEGALE</option>
+          <option>POLITICO / REGOLATORIO</option>
+          <option>SOCIALE</option>
+          <option>AMBIENTALE / CLIMATICO</option>
+          <option>MERCATO / DOMANDA</option>
+          <option>VENDITE E CUSTOMER CARE</option>
+          <option>AREA FINANZA</option>
+          <option>RISORSE UMANE</option>
+          <option>INFRASTRUTTURE / ASSET</option>
+          <option>SUPPLY CHAIN / FORNITORI</option>
+          <option>QUALITÀ E PROCESSI</option>
+          <option>CYBERSECURITY / IT</option>
+          <option>LOGISTICA</option>
+          <option>REPUTAZIONE / BRAND</option>
+          <option>CONCORRENZA</option>
+          <option>INNOVAZIONE / R&D</option>
+          <option>COMPLIANCE / ETICA</option>
+          <option>SALUTE E SICUREZZA (OHS)</option>
+        </select>
 
-        <div class="row">
-          <label for="attivita">Attività (libero)</label>
-          <textarea id="attivita" name="attivita" placeholder="Descrivi l’attività / processo / evento osservato…" required></textarea>
-        </div>
-      </div>
+        <label for="attivita">Attività</label>
+        <textarea id="attivita" name="attivita" required placeholder="Descrivi attività / processo / evento…"></textarea>
 
-      <div class="card">
-        <h3 style="margin:0 0 10px;">Parti interessate & Obiettivo</h3>
+        <label for="partiInteressate">Parti interessate</label>
+        <select id="partiInteressate" name="partiInteressate" required>
+          <option value="" selected disabled>Seleziona…</option>
+          <option>CLIENTI</option>
+          <option>PROSPECT / MERCATO POTENZIALE</option>
+          <option>COMPETITORS</option>
+          <option>FORNITORI</option>
+          <option>PARTNER / ALLEANZE</option>
+          <option>SOCIETÀ DI INGEGNERIA</option>
+          <option>STUDI DI ARCHITETTURA</option>
+          <option>CONSULENTI</option>
+          <option>ISTITUTI DI CREDITO / BANCHE</option>
+          <option>AGENZIA DELLE ENTRATE</option>
+          <option>INAIL</option>
+          <option>ENTI REGOLATORI / PA</option>
+          <option>ORGANISMI DI CERTIFICAZIONE</option>
+          <option>ASSICURAZIONI</option>
+          <option>DIPENDENTI</option>
+          <option>COLLABORATORI / FREELANCE</option>
+          <option>PROPRIETÀ / SOCI</option>
+          <option>COMUNITÀ LOCALE</option>
+          <option>ASSOCIAZIONI DI CATEGORIA</option>
+          <option>MEDIA / OPINIONE PUBBLICA</option>
+        </select>
 
-        <div class="row">
-          <label for="partiInteressate">Parti interessate</label>
-          <select id="partiInteressate" name="partiInteressate" required>
-            <option value="" selected disabled>Seleziona…</option>
-            <option>CLIENTI</option>
-            <option>PROSPECT / MERCATO POTENZIALE</option>
-            <option>COMPETITORS</option>
-            <option>FORNITORI</option>
-            <option>PARTNER / ALLEANZE</option>
-            <option>SOCIETÀ DI INGEGNERIA</option>
-            <option>STUDI DI ARCHITETTURA</option>
-            <option>CONSULENTI</option>
-            <option>ISTITUTI DI CREDITO / BANCHE</option>
-            <option>AGENZIA DELLE ENTRATE</option>
-            <option>INAIL</option>
-            <option>ENTI REGOLATORI / PA</option>
-            <option>ORGANISMI DI CERTIFICAZIONE</option>
-            <option>ASSICURAZIONI</option>
-            <option>DIPENDENTI</option>
-            <option>COLLABORATORI / FREELANCE</option>
-            <option>PROPRIETÀ / SOCI</option>
-            <option>COMUNITÀ LOCALE</option>
-            <option>ASSOCIAZIONI DI CATEGORIA</option>
-            <option>MEDIA / OPINIONE PUBBLICA</option>
-          </select>
-        </div>
+        <label for="obiettivo">Obiettivo</label>
+        <textarea id="obiettivo" name="obiettivo" required placeholder="Obiettivo collegato al fattore (azione, risultato, KPI)…"></textarea>
 
-        <div class="row">
-          <label for="obiettivo">Obiettivo (libero)</label>
-          <textarea id="obiettivo" name="obiettivo" placeholder="Definisci l’obiettivo collegato al fattore (azione, risultato atteso, KPI, ecc.)" required></textarea>
-        </div>
+        <label for="fattoreAnte">Fattore (ante) <span class="pill" id="pillFactor">—</span></label>
+        <select id="fattoreAnte" name="fattoreAnte" required>
+          <option value="" selected disabled>Seleziona…</option>
+          <option value="25|BASSA MINACCIA (E)">25 - BASSA MINACCIA (E)</option>
+          <option value="50|MEDIA MINACCIA (E)">50 - MEDIA MINACCIA (E)</option>
+          <option value="75|ESTREMA MINACCIA (E)">75 - ESTREMA MINACCIA (E)</option>
 
-        <div class="row">
-          <label for="fattoreAnte">Fattore (ante) <span class="pill" id="pillFactor">—</span></label>
-          <select id="fattoreAnte" name="fattoreAnte" required>
-            <option value="" selected disabled>Seleziona…</option>
+          <option value="25|BASSA OPPORTUNITA (E)">25 - BASSA OPPORTUNITA (E)</option>
+          <option value="50|MEDIA OPPORTUNITA (E)">50 - MEDIA OPPORTUNITA (E)</option>
+          <option value="100|ESTREMA OPPORTUNITA (E)">100 - ESTREMA OPPORTUNITA (E)</option>
 
-            <!-- Minaccia (E) -->
-            <option value="25|BASSA MINACCIA (E)">25 - BASSA MINACCIA (E)</option>
-            <option value="50|MEDIA MINACCIA (E)">50 - MEDIA MINACCIA (E)</option>
-            <option value="75|ESTREMA MINACCIA (E)">75 - ESTREMA MINACCIA (E)</option>
+          <option value="25|BASSA DEBOLEZZA (I)">25 - BASSA DEBOLEZZA (I)</option>
+          <option value="50|MEDIA DEBOLEZZA (I)">50 - MEDIA DEBOLEZZA (I)</option>
+          <option value="100|ESTREMA DEBOLEZZA (I)">100 - ESTREMA DEBOLEZZA (I)</option>
 
-            <!-- Opportunità (E) -->
-            <option value="25|BASSA OPPORTUNITA (E)">25 - BASSA OPPORTUNITA (E)</option>
-            <option value="50|MEDIA OPPORTUNITA (E)">50 - MEDIA OPPORTUNITA (E)</option>
-            <option value="100|ESTREMA OPPORTUNITA (E)">100 - ESTREMA OPPORTUNITA (E)</option>
-
-            <!-- Debolezza (I) -->
-            <option value="25|BASSA DEBOLEZZA (I)">25 - BASSA DEBOLEZZA (I)</option>
-            <option value="50|MEDIA DEBOLEZZA (I)">50 - MEDIA DEBOLEZZA (I)</option>
-            <option value="100|ESTREMA DEBOLEZZA (I)">100 - ESTREMA DEBOLEZZA (I)</option>
-
-            <!-- Forza (I) -->
-            <option value="25|BASSA FORZA (I)">25 - BASSA FORZA (I)</option>
-            <option value="50|MEDIA FORZA (I)">50 - MEDIA FORZA (I)</option>
-            <option value="100|ESTREMA FORZA (I)">100 - ESTREMA FORZA (I)</option>
-          </select>
-
-          <div class="hint">
-            Il valore numerico (25/50/75/100) viene inviato come percentuale per i calcoli.
-          </div>
-        </div>
+          <option value="25|BASSA FORZA (I)">25 - BASSA FORZA (I)</option>
+          <option value="50|MEDIA FORZA (I)">50 - MEDIA FORZA (I)</option>
+          <option value="100|ESTREMA FORZA (I)">100 - ESTREMA FORZA (I)</option>
+        </select>
 
         <!-- Honeypot -->
         <div class="hidden">
@@ -181,20 +155,47 @@
         </div>
 
         <div class="actions">
-          <button id="btn" type="submit">Invia</button>
+          <button id="btn" type="submit">Inserisci</button>
           <span id="status" class="muted"></span>
         </div>
+      </form>
+    </div>
+
+    <div class="card">
+      <h3 style="margin:0 0 10px;">Tabella (dati già presenti)</h3>
+
+      <div class="toolbar">
+        <button id="reloadBtn" class="secondary" type="button">Ricarica</button>
+        <input id="search" type="text" placeholder="Cerca (testo libero)..." />
+        <span class="muted" id="count"></span>
+      </div>
+
+      <div style="overflow:auto; max-height: 520px; margin-top:10px;">
+        <table id="t">
+          <thead>
+            <tr>
+              <th class="nowrap">Azioni</th>
+              <th class="nowrap">Data</th>
+              <th>Area contesto</th>
+              <th>Attività</th>
+              <th>Parti interessate</th>
+              <th>Obiettivo</th>
+              <th class="nowrap">Fattore</th>
+              <th class="nowrap">Record</th>
+            </tr>
+          </thead>
+          <tbody id="tb"></tbody>
+        </table>
       </div>
     </div>
-  </form>
+  </div>
 
   <script>
     // ===== CONFIG =====
-    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwIpExMkZ_buUPpOBXFrnBFsdy1xqd6evmZ51L42PSJR78Scz1xqWOZV1InNV51vMzu/exec";
-    
-    
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwEY-Hz0D_b7U-kaJzzEFVOjrVERJtt05q5LbROefeWQnJ-VFhCren9up-j1ITIGDcB/exec";
     const API_KEY = "Djungo-Test-2026-01-17-chiave-lunga-XYZ";
 
+    // Timestamp per anti-bot
     const pageLoadTs = Date.now();
 
     const form = document.getElementById("f");
@@ -203,9 +204,23 @@
     const fattoreAnteEl = document.getElementById("fattoreAnte");
     const pillFactorEl = document.getElementById("pillFactor");
 
+    const reloadBtn = document.getElementById("reloadBtn");
+    const tb = document.getElementById("tb");
+    const searchEl = document.getElementById("search");
+    const countEl = document.getElementById("count");
+
+    let currentRows = [];
+
     function setStatus(msg, cls) {
       statusEl.className = cls || "muted";
       statusEl.textContent = msg;
+    }
+
+    function isoToDDMMYY(iso) {
+      const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso);
+      if (!m) return "";
+      const yy = m[1].slice(2);
+      return `${m[3]}/${m[2]}/${yy}`;
     }
 
     fattoreAnteEl.addEventListener("change", () => {
@@ -215,13 +230,97 @@
       pillFactorEl.textContent = `${pct}% • ${label}`;
     });
 
-    function isoToDDMMYY(iso) {
-      const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso);
-      if (!m) return "";
-      const yy = m[1].slice(2);
-      return `${m[3]}/${m[2]}/${yy}`;
+    // ===== JSONP LIST =====
+    function loadRows() {
+      return new Promise((resolve) => {
+        const cbName = "cb_" + Math.random().toString(36).slice(2);
+        window[cbName] = (data) => {
+          try {
+            resolve(data);
+          } finally {
+            delete window[cbName];
+          }
+        };
+
+        const s = document.createElement("script");
+        const url = new URL(WEB_APP_URL);
+        url.searchParams.set("mode", "list");
+        url.searchParams.set("apiKey", API_KEY);
+        url.searchParams.set("callback", cbName);
+        url.searchParams.set("limit", "300");
+        url.searchParams.set("_", Date.now().toString());
+        s.src = url.toString();
+        s.onerror = () => resolve({ ok: false, error: "JSONP load error" });
+        document.body.appendChild(s);
+
+        // cleanup script tag dopo poco
+        setTimeout(() => { try { document.body.removeChild(s); } catch (_) {} }, 1500);
+      });
     }
 
+    function render(rows) {
+      const q = (searchEl.value || "").trim().toLowerCase();
+
+      const filtered = !q ? rows : rows.filter(r => {
+        const blob = [
+          r.dataRilevazione, r.areaContesto, r.attivita, r.partiInteressate, r.obiettivo,
+          String(r.factorPct || ""), r.factorLabel, r.recordId
+        ].join(" ").toLowerCase();
+        return blob.includes(q);
+      });
+
+      tb.innerHTML = "";
+      for (const r of filtered.slice().reverse()) {
+        const tr = document.createElement("tr");
+        tr.dataset.id = r.recordId;
+
+        tr.innerHTML = `
+          <td class="nowrap">
+            <div class="row-actions">
+              <button type="button" class="secondary" data-act="edit">Modifica</button>
+              <button type="button" class="hidden" data-act="save">Salva</button>
+              <button type="button" class="hidden danger" data-act="cancel">Annulla</button>
+            </div>
+          </td>
+          <td class="nowrap" data-k="dataRilevazione">${escapeHtml(r.dataRilevazione || "")}</td>
+          <td data-k="areaContesto">${escapeHtml(r.areaContesto || "")}</td>
+          <td data-k="attivita">${escapeHtml(r.attivita || "")}</td>
+          <td data-k="partiInteressate">${escapeHtml(r.partiInteressate || "")}</td>
+          <td data-k="obiettivo">${escapeHtml(r.obiettivo || "")}</td>
+          <td class="nowrap" data-k="fattore">${escapeHtml(String(r.factorPct || ""))}% • ${escapeHtml(r.factorLabel || "")}</td>
+          <td class="nowrap"><small>${escapeHtml(r.recordId || "")}</small></td>
+        `;
+
+        tb.appendChild(tr);
+      }
+
+      countEl.textContent = `Righe: ${filtered.length} / ${rows.length}`;
+    }
+
+    function escapeHtml(s) {
+      return String(s)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    async function refresh() {
+      countEl.textContent = "Caricamento...";
+      const data = await loadRows();
+      if (!data || !data.ok) {
+        countEl.textContent = "Errore caricamento.";
+        return;
+      }
+      currentRows = data.rows || [];
+      render(currentRows);
+    }
+
+    reloadBtn.addEventListener("click", refresh);
+    searchEl.addEventListener("input", () => render(currentRows));
+
+    // ===== INSERT =====
     form.addEventListener("submit", async (ev) => {
       ev.preventDefault();
       btn.disabled = true;
@@ -229,7 +328,6 @@
 
       const fd = new FormData(form);
 
-      // type="date" => yyyy-mm-dd
       const isoDate = (fd.get("dataRilevazione") || "").toString().trim();
       const dataRilevazione = isoToDDMMYY(isoDate);
 
@@ -240,12 +338,7 @@
       const fattoreAnte = (fd.get("fattoreAnte") || "").toString().trim();
       const hp = (fd.get("hp") || "").toString();
 
-      if (!dataRilevazione) {
-        setStatus("Seleziona una data valida dal calendario.", "err");
-        btn.disabled = false;
-        return;
-      }
-      if (!areaContesto || !attivita || !partiInteressate || !obiettivo || !fattoreAnte) {
+      if (!dataRilevazione || !areaContesto || !attivita || !partiInteressate || !obiettivo || !fattoreAnte) {
         setStatus("Compila tutti i campi obbligatori.", "err");
         btn.disabled = false;
         return;
@@ -255,6 +348,7 @@
       const factorPct = Number(factorPctStr || 0);
 
       const payload = {
+        mode: "insert",
         apiKey: API_KEY,
         ts: pageLoadTs,
         hp: hp,
@@ -264,12 +358,10 @@
         attivita,
         partiInteressate,
         obiettivo,
-
         factorPct,
-        factorLabel,
-        fattoreAnteRaw: fattoreAnte,
+        factorLabel
 
-        userAgent: navigator.userAgent
+        // userAgent: navigator.userAgent  // (commentato) utile per debug, ora non lo inviamo
       };
 
       try {
@@ -280,9 +372,11 @@
           body: JSON.stringify(payload)
         });
 
-        setStatus("Inviato correttamente.", "ok");
+        setStatus("Inserito. Ricarico tabella…", "ok");
         form.reset();
         pillFactorEl.textContent = "—";
+        await refresh();
+        setStatus("OK.", "ok");
 
       } catch (e) {
         setStatus("Errore di rete: " + e, "err");
@@ -290,8 +384,166 @@
         btn.disabled = false;
       }
     });
+
+    // ===== EDIT / UPDATE (inline) =====
+    tb.addEventListener("click", async (ev) => {
+      const btnEl = ev.target.closest("button");
+      if (!btnEl) return;
+
+      const tr = ev.target.closest("tr");
+      if (!tr) return;
+
+      const recordId = tr.dataset.id;
+      const act = btnEl.dataset.act;
+
+      if (act === "edit") {
+        enterEditMode(tr);
+        return;
+      }
+      if (act === "cancel") {
+        exitEditMode(tr, true);
+        return;
+      }
+      if (act === "save") {
+        await saveRow(tr, recordId);
+        return;
+      }
+    });
+
+    function enterEditMode(tr) {
+      // Salvo snapshot testo originale
+      tr.dataset.snapshot = JSON.stringify({
+        dataRilevazione: tr.querySelector('[data-k="dataRilevazione"]').textContent.trim(),
+        areaContesto: tr.querySelector('[data-k="areaContesto"]').textContent.trim(),
+        attivita: tr.querySelector('[data-k="attivita"]').textContent.trim(),
+        partiInteressate: tr.querySelector('[data-k="partiInteressate"]').textContent.trim(),
+        obiettivo: tr.querySelector('[data-k="obiettivo"]').textContent.trim(),
+        fattore: tr.querySelector('[data-k="fattore"]').textContent.trim()
+      });
+
+      // Trasformo celle in input
+      makeInput(tr, "dataRilevazione", "text"); // dd/mm/yy
+      makeInput(tr, "areaContesto", "text");
+      makeInput(tr, "attivita", "textarea");
+      makeInput(tr, "partiInteressate", "text");
+      makeInput(tr, "obiettivo", "textarea");
+      makeInput(tr, "fattore", "text"); // "50% • MEDIA MINACCIA (E)"
+
+      toggleRowButtons(tr, true);
+    }
+
+    function makeInput(tr, key, type) {
+      const td = tr.querySelector(`[data-k="${key}"]`);
+      if (!td) return;
+      const val = td.textContent.trim();
+
+      if (type === "textarea") {
+        td.innerHTML = `<textarea class="cell-input" data-in="${key}">${escapeHtml(val)}</textarea>`;
+      } else {
+        td.innerHTML = `<input class="cell-input" data-in="${key}" value="${escapeHtml(val)}" />`;
+      }
+    }
+
+    function toggleRowButtons(tr, editing) {
+      const editBtn = tr.querySelector('button[data-act="edit"]');
+      const saveBtn = tr.querySelector('button[data-act="save"]');
+      const cancelBtn = tr.querySelector('button[data-act="cancel"]');
+
+      if (editing) {
+        editBtn.classList.add("hidden");
+        saveBtn.classList.remove("hidden");
+        cancelBtn.classList.remove("hidden");
+      } else {
+        editBtn.classList.remove("hidden");
+        saveBtn.classList.add("hidden");
+        cancelBtn.classList.add("hidden");
+      }
+    }
+
+    function exitEditMode(tr, restore) {
+      if (restore) {
+        const snap = JSON.parse(tr.dataset.snapshot || "{}");
+        tr.querySelector('[data-k="dataRilevazione"]').textContent = snap.dataRilevazione || "";
+        tr.querySelector('[data-k="areaContesto"]').textContent = snap.areaContesto || "";
+        tr.querySelector('[data-k="attivita"]').textContent = snap.attivita || "";
+        tr.querySelector('[data-k="partiInteressate"]').textContent = snap.partiInteressate || "";
+        tr.querySelector('[data-k="obiettivo"]').textContent = snap.obiettivo || "";
+        tr.querySelector('[data-k="fattore"]').textContent = snap.fattore || "";
+      } else {
+        // se non restore, lasciamo come sono (di solito ricarichiamo da server)
+      }
+
+      delete tr.dataset.snapshot;
+      toggleRowButtons(tr, false);
+    }
+
+    function parseFattoreCell(text) {
+      // atteso: "50% • MEDIA MINACCIA (E)"
+      const t = String(text || "").trim();
+      const m = /^(\d+)\s*%\s*•\s*(.+)$/.exec(t);
+      if (!m) return { factorPct: 0, factorLabel: "" };
+      return { factorPct: Number(m[1]), factorLabel: String(m[2]).trim() };
+    }
+
+    async function saveRow(tr, recordId) {
+      // Leggo valori editati
+      const getVal = (k) => {
+        const el = tr.querySelector(`[data-in="${k}"]`);
+        return el ? el.value.trim() : "";
+      };
+
+      const dataRilevazione = getVal("dataRilevazione");
+      const areaContesto = getVal("areaContesto");
+      const attivita = getVal("attivita");
+      const partiInteressate = getVal("partiInteressate");
+      const obiettivo = getVal("obiettivo");
+      const fattoreTxt = getVal("fattore");
+
+      const { factorPct, factorLabel } = parseFattoreCell(fattoreTxt);
+
+      if (!dataRilevazione || !areaContesto || !attivita || !partiInteressate || !obiettivo || !factorPct || !factorLabel) {
+        alert("Compila tutti i campi. Per il fattore usa formato: 50% • MEDIA MINACCIA (E)");
+        return;
+      }
+
+      const payload = {
+        mode: "update",
+        apiKey: API_KEY,
+        ts: pageLoadTs,
+        hp: "",
+
+        recordId,
+        dataRilevazione,
+        areaContesto,
+        attivita,
+        partiInteressate,
+        obiettivo,
+        factorPct,
+        factorLabel
+
+        // userAgent: navigator.userAgent  // (commentato)
+      };
+
+      try {
+        await fetch(WEB_APP_URL, {
+          method: "POST",
+          mode: "no-cors",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify(payload)
+        });
+
+        await refresh(); // ricarico dati dal server
+      } catch (e) {
+        alert("Errore update: " + e);
+      }
+    }
+
+    // Avvio
+    refresh();
   </script>
 </body>
+</html>
+
 </html>
 
 
