@@ -1,383 +1,400 @@
-<script>
-  // ===== CONFIG =====
-  const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbznxZL1iXMew8yhfTixVfmF1dPI9_VUzo2_52wWpXdGzJ1lKoCP3hPB2hcDJZKCPLjb/exec";
-  const API_KEY = "Djungo-Test-2026-01-17-chiave-lunga-XYZ";
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ISO 9001 - Contesto & SWOT (Viewer + Form)</title>
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 1200px; margin: 28px auto; padding: 0 16px; }
+    h1 { margin: 0 0 6px; }
+    .muted { color: #666; font-size: 0.95rem; margin: 0 0 16px; }
 
-  // Timestamp per anti-bot (lato server è 0, quindi non blocca)
-  const pageLoadTs = Date.now();
+    .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    @media (max-width: 920px) { .grid2 { grid-template-columns: 1fr; } }
 
-  const form = document.getElementById("f");
-  const statusEl = document.getElementById("status");
-  const btn = document.getElementById("btn");
-  const fattoreAnteEl = document.getElementById("fattoreAnte");
-  const pillFactorEl = document.getElementById("pillFactor");
+    .card { border: 1px solid #e5e5e5; border-radius: 10px; padding: 14px; background: #fafafa; }
+    label { display:block; margin: 10px 0 6px; font-weight: 600; }
+    input, select, textarea {
+      width: 100%;
+      padding: 9px;
+      box-sizing: border-box;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 14px;
+      background: #fff;
+    }
+    textarea { min-height: 90px; resize: vertical; }
 
-  const reloadBtn = document.getElementById("reloadBtn");
-  const tb = document.getElementById("tb");
-  const searchEl = document.getElementById("search");
-  const countEl = document.getElementById("count");
+    .actions { margin-top: 12px; display:flex; gap: 10px; align-items:center; flex-wrap: wrap; }
+    button {
+      padding: 9px 12px;
+      border: 0;
+      border-radius: 8px;
+      background: #1a73e8;
+      color: #fff;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    button.secondary { background: #666; }
+    button.danger { background: #b00; }
+    button:disabled { opacity: 0.6; cursor: not-allowed; }
 
-  let currentRows = [];
+    .ok { color: #0a6; font-weight: 600; }
+    .err { color: #b00; font-weight: 600; }
 
-  function setStatus(msg, cls) {
-    statusEl.className = cls || "muted";
-    statusEl.textContent = msg;
-  }
+    .pill { display:inline-block; padding: 4px 8px; border-radius: 999px; background:#eee; font-size: 12px; margin-left: 8px; color:#333; }
+    .hint { font-size: 0.9rem; color: #555; margin-top: 6px; }
+    .hidden { display:none; }
 
-  function isoToDDMMYY(iso) {
-    const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso);
-    if (!m) return "";
-    const yy = m[1].slice(2);
-    return `${m[3]}/${m[2]}/${yy}`;
-  }
+    iframe { width: 100%; height: 620px; border: 1px solid #ddd; border-radius: 10px; background: #fff; }
+    .hr { height:1px; background:#e5e5e5; margin:12px 0; }
+  </style>
+</head>
 
-  fattoreAnteEl.addEventListener("change", () => {
-    const v = (fattoreAnteEl.value || "");
-    if (!v) { pillFactorEl.textContent = "—"; return; }
-    const [pct, label] = v.split("|");
-    pillFactorEl.textContent = `${pct}% • ${label}`;
-  });
+<body>
+  <h1>ISO 9001 – Contesto & SWOT</h1>
+  <p class="muted">
+    Inserisci nuove righe su Google Sheet e usa il viewer (solo lettura) per copiare il <b>recordId</b> (colonna A) e aggiornare/eliminare.
+  </p>
 
-  // ========= JSONP LIST (robusto) =========
-  function loadRowsJsonp(limit = 300) {
-    return new Promise((resolve) => {
-      const cbName = "cb_" + Date.now().toString(36) + "_" + Math.random().toString(36).slice(2);
+  <div class="grid2">
+    <!-- COLONNA SINISTRA: FORM -->
+    <div class="card">
+      <h3 style="margin:0 0 10px;">Nuova riga (Insert)</h3>
 
-      // Timeout “vero”: se JSONP non risponde entro N ms, falliamo
-      const timeoutMs = 6000;
-      let done = false;
+      <form id="insertForm" autocomplete="on">
+        <label for="dataRilevazione">Data rilevazione</label>
+        <input id="dataRilevazione" name="dataRilevazione" type="date" required />
+        <div class="hint">Seleziona da calendario (salviamo nel foglio come gg/mm/aa).</div>
 
-      function finish(payload) {
-        if (done) return;
-        done = true;
-        resolve(payload);
+        <label for="areaContesto">Area contesto</label>
+        <select id="areaContesto" name="areaContesto" required>
+          <option value="" selected disabled>Seleziona…</option>
+          <option>ECONOMICO</option>
+          <option>TECNOLOGICO</option>
+          <option>LEGALE</option>
+          <option>POLITICO / REGOLATORIO</option>
+          <option>SOCIALE</option>
+          <option>AMBIENTALE / CLIMATICO</option>
+          <option>MERCATO / DOMANDA</option>
+          <option>VENDITE E CUSTOMER CARE</option>
+          <option>AREA FINANZA</option>
+          <option>RISORSE UMANE</option>
+          <option>INFRASTRUTTURE / ASSET</option>
+          <option>SUPPLY CHAIN / FORNITORI</option>
+          <option>QUALITÀ E PROCESSI</option>
+          <option>CYBERSECURITY / IT</option>
+          <option>LOGISTICA</option>
+          <option>REPUTAZIONE / BRAND</option>
+          <option>CONCORRENZA</option>
+          <option>INNOVAZIONE / R&D</option>
+          <option>COMPLIANCE / ETICA</option>
+          <option>SALUTE E SICUREZZA (OHS)</option>
+        </select>
+
+        <label for="attivita">Attività</label>
+        <textarea id="attivita" name="attivita" required placeholder="Descrivi attività / processo / evento…"></textarea>
+
+        <label for="partiInteressate">Parti interessate</label>
+        <select id="partiInteressate" name="partiInteressate" required>
+          <option value="" selected disabled>Seleziona…</option>
+          <option>CLIENTI</option>
+          <option>PROSPECT / MERCATO POTENZIALE</option>
+          <option>COMPETITORS</option>
+          <option>FORNITORI</option>
+          <option>PARTNER / ALLEANZE</option>
+          <option>SOCIETÀ DI INGEGNERIA</option>
+          <option>STUDI DI ARCHITETTURA</option>
+          <option>CONSULENTI</option>
+          <option>ISTITUTI DI CREDITO / BANCHE</option>
+          <option>AGENZIA DELLE ENTRATE</option>
+          <option>INAIL</option>
+          <option>ENTI REGOLATORI / PA</option>
+          <option>ORGANISMI DI CERTIFICAZIONE</option>
+          <option>ASSICURAZIONI</option>
+          <option>DIPENDENTI</option>
+          <option>COLLABORATORI / FREELANCE</option>
+          <option>PROPRIETÀ / SOCI</option>
+          <option>COMUNITÀ LOCALE</option>
+          <option>ASSOCIAZIONI DI CATEGORIA</option>
+          <option>MEDIA / OPINIONE PUBBLICA</option>
+        </select>
+
+        <label for="obiettivo">Obiettivo</label>
+        <textarea id="obiettivo" name="obiettivo" required placeholder="Obiettivo collegato al fattore (azione, risultato, KPI)…"></textarea>
+
+        <label for="fattoreAnte">Fattore (ante) <span class="pill" id="pillFactor">—</span></label>
+        <select id="fattoreAnte" name="fattoreAnte" required>
+          <option value="" selected disabled>Seleziona…</option>
+          <option value="25|BASSA MINACCIA (E)">25 - BASSA MINACCIA (E)</option>
+          <option value="50|MEDIA MINACCIA (E)">50 - MEDIA MINACCIA (E)</option>
+          <option value="75|ESTREMA MINACCIA (E)">75 - ESTREMA MINACCIA (E)</option>
+
+          <option value="25|BASSA OPPORTUNITA (E)">25 - BASSA OPPORTUNITA (E)</option>
+          <option value="50|MEDIA OPPORTUNITA (E)">50 - MEDIA OPPORTUNITA (E)</option>
+          <option value="100|ESTREMA OPPORTUNITA (E)">100 - ESTREMA OPPORTUNITA (E)</option>
+
+          <option value="25|BASSA DEBOLEZZA (I)">25 - BASSA DEBOLEZZA (I)</option>
+          <option value="50|MEDIA DEBOLEZZA (I)">50 - MEDIA DEBOLEZZA (I)</option>
+          <option value="100|ESTREMA DEBOLEZZA (I)">100 - ESTREMA DEBOLEZZA (I)</option>
+
+          <option value="25|BASSA FORZA (I)">25 - BASSA FORZA (I)</option>
+          <option value="50|MEDIA FORZA (I)">50 - MEDIA FORZA (I)</option>
+          <option value="100|ESTREMA FORZA (I)">100 - ESTREMA FORZA (I)</option>
+        </select>
+
+        <!-- Honeypot -->
+        <div class="hidden">
+          <label>Se sei umano lascia vuoto</label>
+          <input name="hp" tabindex="-1" autocomplete="off" />
+        </div>
+
+        <div class="actions">
+          <button id="insertBtn" type="submit">Inserisci</button>
+          <span id="insertStatus" class="muted"></span>
+        </div>
+      </form>
+
+      <div class="hr"></div>
+
+      <h3 style="margin:0 0 10px;">Aggiorna riga (Update)</h3>
+      <p class="muted">Inserisci <b>recordId</b> (colonna A). Lascia vuoti i campi che non vuoi modificare.</p>
+
+      <form id="updateForm">
+        <label>recordId</label>
+        <input name="recordId" required placeholder="UUID (colonna A)">
+
+        <label>Attività (opzionale)</label>
+        <textarea name="attivita" placeholder="Nuova attività (oppure lascia vuoto)"></textarea>
+
+        <label>Obiettivo (opzionale)</label>
+        <textarea name="obiettivo" placeholder="Nuovo obiettivo (oppure lascia vuoto)"></textarea>
+
+        <div class="actions">
+          <button type="submit" class="secondary">Aggiorna</button>
+          <span id="updateStatus" class="muted"></span>
+        </div>
+      </form>
+
+      <div class="hr"></div>
+
+      <h3 style="margin:0 0 10px;">Elimina riga (Delete)</h3>
+      <p class="muted">Inserisci <b>recordId</b> e conferma.</p>
+
+      <form id="deleteForm">
+        <label>recordId</label>
+        <input name="recordId" required placeholder="UUID (colonna A)">
+
+        <label style="font-weight:400;">
+          <input type="checkbox" name="confirm" required>
+          Confermo eliminazione
+        </label>
+
+        <div class="actions">
+          <button type="submit" class="danger">Elimina</button>
+          <span id="deleteStatus" class="muted"></span>
+        </div>
+      </form>
+    </div>
+
+    <!-- COLONNA DESTRA: VIEWER -->
+    <div class="card">
+      <h3 style="margin:0 0 10px;">Viewer (Google Sheet – sola lettura)</h3>
+      <p class="muted">
+        Questo è il foglio pubblicato. Copia il <b>recordId</b> (colonna A) per Update/Delete.
+      </p>
+
+      <iframe
+        src="https://docs.google.com/spreadsheets/d/e/2PACX-1vTUnecuOwa6Pt3oHkGnR16o4bsQ0VV_MsdhZNx2cpz3fbpPFLqLur6B94ujVXdOPlTNFas_qc32UX3L/pubhtml?widget=true&amp;headers=false">
+      </iframe>
+
+      <p class="muted" style="margin-top:10px;">
+        Nota: il viewer può avere un minimo di cache. Se non vedi subito, ricarica la pagina o apri il foglio in una nuova scheda.
+      </p>
+    </div>
+  </div>
+
+  <script>
+    // ===== CONFIG =====
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbznxZL1iXMew8yhfTixVfmF1dPI9_VUzo2_52wWpXdGzJ1lKoCP3hPB2hcDJZKCPLjb/exec";
+    const API_KEY = "Djungo-Test-2026-01-17-chiave-lunga-XYZ";
+    const pageLoadTs = Date.now();
+
+    function isoToDDMMYY(iso) {
+      const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso);
+      if (!m) return "";
+      const yy = m[1].slice(2);
+      return `${m[3]}/${m[2]}/${yy}`;
+    }
+
+    function setMsg(el, msg, cls) {
+      el.className = cls || "muted";
+      el.textContent = msg;
+    }
+
+    // ===== INSERT =====
+    const insertForm = document.getElementById("insertForm");
+    const insertBtn = document.getElementById("insertBtn");
+    const insertStatus = document.getElementById("insertStatus");
+    const fattoreAnteEl = document.getElementById("fattoreAnte");
+    const pillFactorEl = document.getElementById("pillFactor");
+
+    fattoreAnteEl.addEventListener("change", () => {
+      const v = (fattoreAnteEl.value || "");
+      if (!v) { pillFactorEl.textContent = "—"; return; }
+      const [pct, label] = v.split("|");
+      pillFactorEl.textContent = `${pct}% • ${label}`;
+    });
+
+    insertForm.addEventListener("submit", async (ev) => {
+      ev.preventDefault();
+      insertBtn.disabled = true;
+      setMsg(insertStatus, "Invio in corso...", "muted");
+
+      const fd = new FormData(insertForm);
+
+      const isoDate = (fd.get("dataRilevazione") || "").toString().trim();
+      const dataRilevazione = isoToDDMMYY(isoDate);
+      const areaContesto = (fd.get("areaContesto") || "").toString().trim();
+      const attivita = (fd.get("attivita") || "").toString().trim();
+      const partiInteressate = (fd.get("partiInteressate") || "").toString().trim();
+      const obiettivo = (fd.get("obiettivo") || "").toString().trim();
+      const fattoreAnte = (fd.get("fattoreAnte") || "").toString().trim();
+      const hp = (fd.get("hp") || "").toString();
+
+      if (!dataRilevazione || !areaContesto || !attivita || !partiInteressate || !obiettivo || !fattoreAnte) {
+        setMsg(insertStatus, "Compila tutti i campi obbligatori.", "err");
+        insertBtn.disabled = false;
+        return;
       }
 
-      window[cbName] = (data) => {
-        try {
-          finish(data);
-        } finally {
-          // cleanup callback globale
-          try { delete window[cbName]; } catch (_) { window[cbName] = undefined; }
-          // rimozione script tag collegato
-          try {
-            const el = document.getElementById(cbName);
-            if (el) el.remove();
-          } catch (_) {}
-        }
+      const [factorPctStr, factorLabel] = fattoreAnte.split("|");
+      const factorPct = Number(factorPctStr || 0);
+
+      const payload = {
+        mode: "insert",
+        apiKey: API_KEY,
+        ts: pageLoadTs,
+        hp,
+        dataRilevazione,
+        areaContesto,
+        attivita,
+        partiInteressate,
+        obiettivo,
+        factorPct,
+        factorLabel
       };
 
-      const url = new URL(WEB_APP_URL);
-      url.searchParams.set("mode", "list");
-      url.searchParams.set("apiKey", API_KEY);
-      url.searchParams.set("callback", cbName);
-      url.searchParams.set("limit", String(limit));
-      // cache buster forte
-      url.searchParams.set("_", String(Date.now()));
+      try {
+        await fetch(WEB_APP_URL, {
+          method: "POST",
+          mode: "no-cors",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify(payload)
+        });
 
-      const s = document.createElement("script");
-      s.id = cbName;
-      s.src = url.toString();
+        setMsg(insertStatus, "Inserito. Controlla nel viewer a destra (potrebbe volerci un refresh).", "ok");
+        insertForm.reset();
+        pillFactorEl.textContent = "—";
 
-      s.onerror = () => {
-        // cleanup
-        try { delete window[cbName]; } catch (_) {}
-        try { s.remove(); } catch (_) {}
-        finish({ ok: false, error: "JSONP load error (script.onerror)" });
+      } catch (e) {
+        setMsg(insertStatus, "Errore di rete: " + e, "err");
+      } finally {
+        insertBtn.disabled = false;
+      }
+    });
+
+    // ===== UPDATE =====
+    const updateForm = document.getElementById("updateForm");
+    const updateStatus = document.getElementById("updateStatus");
+
+    updateForm.addEventListener("submit", async (ev) => {
+      ev.preventDefault();
+      setMsg(updateStatus, "Aggiornamento in corso...", "muted");
+
+      const fd = new FormData(updateForm);
+      const recordId = (fd.get("recordId") || "").toString().trim();
+      const attivita = (fd.get("attivita") || "").toString().trim();
+      const obiettivo = (fd.get("obiettivo") || "").toString().trim();
+
+      if (!recordId) {
+        setMsg(updateStatus, "recordId obbligatorio.", "err");
+        return;
+      }
+      if (!attivita && !obiettivo) {
+        setMsg(updateStatus, "Inserisci almeno un campo da aggiornare (Attività o Obiettivo).", "err");
+        return;
+      }
+
+      const payload = {
+        mode: "update",
+        apiKey: API_KEY,
+        ts: pageLoadTs,
+        hp: "",
+        recordId,
+        attivita,
+        obiettivo
       };
 
-      document.body.appendChild(s);
+      try {
+        await fetch(WEB_APP_URL, {
+          method: "POST",
+          mode: "no-cors",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify(payload)
+        });
 
-      // timeout
-      setTimeout(() => {
-        if (done) return;
-        try { delete window[cbName]; } catch (_) {}
-        try { s.remove(); } catch (_) {}
-        finish({ ok: false, error: "JSONP timeout" });
-      }, timeoutMs);
-    });
-  }
+        setMsg(updateStatus, "OK. Aggiornato (controlla nel viewer; se serve fai refresh).", "ok");
+        updateForm.reset();
 
-  function escapeHtml(s) {
-    return String(s)
-      .replaceAll("&", "&amp;")
-      .replaceAll("<", "&lt;")
-      .replaceAll(">", "&gt;")
-      .replaceAll('"', "&quot;")
-      .replaceAll("'", "&#039;");
-  }
-
-  function render(rows) {
-    const q = (searchEl.value || "").trim().toLowerCase();
-
-    const filtered = !q ? rows : rows.filter(r => {
-      const blob = [
-        r.dataRilevazione, r.areaContesto, r.attivita, r.partiInteressate, r.obiettivo,
-        String(r.factorPct || ""), r.factorLabel, r.recordId
-      ].join(" ").toLowerCase();
-      return blob.includes(q);
+      } catch (e) {
+        setMsg(updateStatus, "Errore: " + e, "err");
+      }
     });
 
-    tb.innerHTML = "";
-    // NB: rows sono già in ordine naturale; qui mostriamo le più recenti sopra
-    for (const r of filtered.slice().reverse()) {
-      const tr = document.createElement("tr");
-      tr.dataset.id = r.recordId;
+    // ===== DELETE =====
+    const deleteForm = document.getElementById("deleteForm");
+    const deleteStatus = document.getElementById("deleteStatus");
 
-      tr.innerHTML = `
-        <td class="nowrap">
-          <div class="row-actions">
-            <button type="button" class="secondary" data-act="edit">Modifica</button>
-            <button type="button" class="hidden" data-act="save">Salva</button>
-            <button type="button" class="hidden danger" data-act="cancel">Annulla</button>
-          </div>
-        </td>
-        <td class="nowrap" data-k="dataRilevazione">${escapeHtml(r.dataRilevazione || "")}</td>
-        <td data-k="areaContesto">${escapeHtml(r.areaContesto || "")}</td>
-        <td data-k="attivita">${escapeHtml(r.attivita || "")}</td>
-        <td data-k="partiInteressate">${escapeHtml(r.partiInteressate || "")}</td>
-        <td data-k="obiettivo">${escapeHtml(r.obiettivo || "")}</td>
-        <td class="nowrap" data-k="fattore">${escapeHtml(String(r.factorPct || ""))}% • ${escapeHtml(r.factorLabel || "")}</td>
-        <td class="nowrap"><small>${escapeHtml(r.recordId || "")}</small></td>
-      `;
+    deleteForm.addEventListener("submit", async (ev) => {
+      ev.preventDefault();
+      setMsg(deleteStatus, "Eliminazione in corso...", "muted");
 
-      tb.appendChild(tr);
-    }
+      const fd = new FormData(deleteForm);
+      const recordId = (fd.get("recordId") || "").toString().trim();
 
-    countEl.textContent = `Righe: ${filtered.length} / ${rows.length}`;
-  }
+      if (!recordId) {
+        setMsg(deleteStatus, "recordId obbligatorio.", "err");
+        return;
+      }
 
-  async function refresh() {
-    countEl.textContent = "Caricamento...";
-    // Tentativo 1
-    let data = await loadRowsJsonp(500);
+      const payload = {
+        mode: "delete",
+        apiKey: API_KEY,
+        ts: pageLoadTs,
+        hp: "",
+        recordId
+      };
 
-    // Se fallisce, ritento una volta (spesso basta)
-    if (!data || !data.ok) {
-      data = await loadRowsJsonp(500);
-    }
+      try {
+        await fetch(WEB_APP_URL, {
+          method: "POST",
+          mode: "no-cors",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify(payload)
+        });
 
-    if (!data || !data.ok) {
-      countEl.textContent = "Errore caricamento tabella.";
-      console.error("loadRows error:", data);
-      return;
-    }
+        setMsg(deleteStatus, "OK. Eliminato (controlla nel viewer; se serve fai refresh).", "ok");
+        deleteForm.reset();
 
-    currentRows = data.rows || [];
-    render(currentRows);
-  }
-
-  reloadBtn.addEventListener("click", refresh);
-  searchEl.addEventListener("input", () => render(currentRows));
-
-  // ===== INSERT =====
-  form.addEventListener("submit", async (ev) => {
-    ev.preventDefault();
-    btn.disabled = true;
-    setStatus("Invio in corso...", "muted");
-
-    const fd = new FormData(form);
-
-    const isoDate = (fd.get("dataRilevazione") || "").toString().trim();
-    const dataRilevazione = isoToDDMMYY(isoDate);
-
-    const areaContesto = (fd.get("areaContesto") || "").toString().trim();
-    const attivita = (fd.get("attivita") || "").toString().trim();
-    const partiInteressate = (fd.get("partiInteressate") || "").toString().trim();
-    const obiettivo = (fd.get("obiettivo") || "").toString().trim();
-    const fattoreAnte = (fd.get("fattoreAnte") || "").toString().trim();
-    const hp = (fd.get("hp") || "").toString();
-
-    if (!dataRilevazione || !areaContesto || !attivita || !partiInteressate || !obiettivo || !fattoreAnte) {
-      setStatus("Compila tutti i campi obbligatori.", "err");
-      btn.disabled = false;
-      return;
-    }
-
-    const [factorPctStr, factorLabel] = fattoreAnte.split("|");
-    const factorPct = Number(factorPctStr || 0);
-
-    const payload = {
-      mode: "insert",
-      apiKey: API_KEY,
-      ts: pageLoadTs,
-      hp: hp,
-
-      dataRilevazione,
-      areaContesto,
-      attivita,
-      partiInteressate,
-      obiettivo,
-      factorPct,
-      factorLabel
-      // userAgent: navigator.userAgent  // (commentato) utile per debug
-    };
-
-    try {
-      // NB: no-cors → non possiamo leggere la risposta, ma la riga viene scritta
-      await fetch(WEB_APP_URL, {
-        method: "POST",
-        mode: "no-cors",
-        headers: { "Content-Type": "text/plain;charset=utf-8" },
-        body: JSON.stringify(payload)
-      });
-
-      // Aspetto un attimo: Sheets può impiegare qualche centinaio di ms a rendere la riga visibile in lettura
-      setStatus("Inserito. Aggiorno tabella…", "ok");
-      form.reset();
-      pillFactorEl.textContent = "—";
-
-      // micro-delay + refresh
-      setTimeout(async () => {
-        await refresh();
-        setStatus("OK.", "ok");
-      }, 350);
-
-    } catch (e) {
-      setStatus("Errore di rete: " + e, "err");
-    } finally {
-      btn.disabled = false;
-    }
-  });
-
-  // ===== EDIT / UPDATE (inline) =====
-  tb.addEventListener("click", async (ev) => {
-    const btnEl = ev.target.closest("button");
-    if (!btnEl) return;
-
-    const tr = ev.target.closest("tr");
-    if (!tr) return;
-
-    const recordId = tr.dataset.id;
-    const act = btnEl.dataset.act;
-
-    if (act === "edit") { enterEditMode(tr); return; }
-    if (act === "cancel") { exitEditMode(tr, true); return; }
-    if (act === "save") { await saveRow(tr, recordId); return; }
-  });
-
-  function enterEditMode(tr) {
-    tr.dataset.snapshot = JSON.stringify({
-      dataRilevazione: tr.querySelector('[data-k="dataRilevazione"]').textContent.trim(),
-      areaContesto: tr.querySelector('[data-k="areaContesto"]').textContent.trim(),
-      attivita: tr.querySelector('[data-k="attivita"]').textContent.trim(),
-      partiInteressate: tr.querySelector('[data-k="partiInteressate"]').textContent.trim(),
-      obiettivo: tr.querySelector('[data-k="obiettivo"]').textContent.trim(),
-      fattore: tr.querySelector('[data-k="fattore"]').textContent.trim()
+      } catch (e) {
+        setMsg(deleteStatus, "Errore: " + e, "err");
+      }
     });
+  </script>
+</body>
+</html>
 
-    makeInput(tr, "dataRilevazione", "text");
-    makeInput(tr, "areaContesto", "text");
-    makeInput(tr, "attivita", "textarea");
-    makeInput(tr, "partiInteressate", "text");
-    makeInput(tr, "obiettivo", "textarea");
-    makeInput(tr, "fattore", "text");
-
-    toggleRowButtons(tr, true);
-  }
-
-  function makeInput(tr, key, type) {
-    const td = tr.querySelector(`[data-k="${key}"]`);
-    if (!td) return;
-    const val = td.textContent.trim();
-
-    if (type === "textarea") {
-      td.innerHTML = `<textarea class="cell-input" data-in="${key}">${escapeHtml(val)}</textarea>`;
-    } else {
-      td.innerHTML = `<input class="cell-input" data-in="${key}" value="${escapeHtml(val)}" />`;
-    }
-  }
-
-  function toggleRowButtons(tr, editing) {
-    const editBtn = tr.querySelector('button[data-act="edit"]');
-    const saveBtn = tr.querySelector('button[data-act="save"]');
-    const cancelBtn = tr.querySelector('button[data-act="cancel"]');
-
-    if (editing) {
-      editBtn.classList.add("hidden");
-      saveBtn.classList.remove("hidden");
-      cancelBtn.classList.remove("hidden");
-    } else {
-      editBtn.classList.remove("hidden");
-      saveBtn.classList.add("hidden");
-      cancelBtn.classList.add("hidden");
-    }
-  }
-
-  function exitEditMode(tr, restore) {
-    if (restore) {
-      const snap = JSON.parse(tr.dataset.snapshot || "{}");
-      tr.querySelector('[data-k="dataRilevazione"]').textContent = snap.dataRilevazione || "";
-      tr.querySelector('[data-k="areaContesto"]').textContent = snap.areaContesto || "";
-      tr.querySelector('[data-k="attivita"]').textContent = snap.attivita || "";
-      tr.querySelector('[data-k="partiInteressate"]').textContent = snap.partiInteressate || "";
-      tr.querySelector('[data-k="obiettivo"]').textContent = snap.obiettivo || "";
-      tr.querySelector('[data-k="fattore"]').textContent = snap.fattore || "";
-    }
-    delete tr.dataset.snapshot;
-    toggleRowButtons(tr, false);
-  }
-
-  function parseFattoreCell(text) {
-    const t = String(text || "").trim();
-    const m = /^(\d+)\s*%\s*•\s*(.+)$/.exec(t);
-    if (!m) return { factorPct: 0, factorLabel: "" };
-    return { factorPct: Number(m[1]), factorLabel: String(m[2]).trim() };
-  }
-
-  async function saveRow(tr, recordId) {
-    const getVal = (k) => {
-      const el = tr.querySelector(`[data-in="${k}"]`);
-      return el ? el.value.trim() : "";
-    };
-
-    const dataRilevazione = getVal("dataRilevazione");
-    const areaContesto = getVal("areaContesto");
-    const attivita = getVal("attivita");
-    const partiInteressate = getVal("partiInteressate");
-    const obiettivo = getVal("obiettivo");
-    const fattoreTxt = getVal("fattore");
-
-    const { factorPct, factorLabel } = parseFattoreCell(fattoreTxt);
-
-    if (!dataRilevazione || !areaContesto || !attivita || !partiInteressate || !obiettivo || !factorPct || !factorLabel) {
-      alert("Compila tutti i campi. Per il fattore usa: 50% • MEDIA MINACCIA (E)");
-      return;
-    }
-
-    const payload = {
-      mode: "update",
-      apiKey: API_KEY,
-      ts: pageLoadTs,
-      hp: "",
-      recordId,
-      dataRilevazione,
-      areaContesto,
-      attivita,
-      partiInteressate,
-      obiettivo,
-      factorPct,
-      factorLabel
-    };
-
-    try {
-      await fetch(WEB_APP_URL, {
-        method: "POST",
-        mode: "no-cors",
-        headers: { "Content-Type": "text/plain;charset=utf-8" },
-        body: JSON.stringify(payload)
-      });
-
-      // micro-delay + refresh
-      setTimeout(async () => { await refresh(); }, 350);
-    } catch (e) {
-      alert("Errore update: " + e);
-    }
-  }
-
-  // Avvio: caricamento iniziale tabella
-  refresh();
-</script>
 
 
 
