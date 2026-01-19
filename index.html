@@ -88,7 +88,7 @@
 <body>
   <div class="wrap">
     <h1>ISO 9001 – SWOT</h1>
-    <p class="muted">Inserimento + visualizzazione “tipo Excel” (refresh pagina forzato dopo invio).</p>
+    <p class="muted">Inserimento + visualizzazione “tipo Excel” (frontend refresh forzato).</p>
 
     <!-- FORM (in alto) -->
     <div class="card">
@@ -285,7 +285,7 @@
         // cleanup
         setTimeout(() => { try { document.body.removeChild(s); } catch (_) {} }, 1500);
 
-        // safety timeout
+        // safety timeout (evita attese infinite)
         setTimeout(() => resolve({ ok: false, error: "JSONP timeout" }), 5000);
       });
     }
@@ -298,7 +298,7 @@
       const isOpportunity = label.includes("OPPORTUNITA") || label.includes("FORZA");
 
       const level =
-        (pct >= 75) ? "high" :
+        (pct >= 100 || pct >= 75) ? "high" :
         (pct >= 50) ? "mid" : "low";
 
       if (isThreat) return "risk-" + level;
@@ -317,6 +317,8 @@
       });
 
       tb.innerHTML = "";
+
+      // mostro le più recenti in alto
       const ordered = filtered.slice().reverse();
 
       for (const r of ordered) {
@@ -351,7 +353,7 @@
     reloadBtn.addEventListener("click", refresh);
     searchEl.addEventListener("input", () => render(currentRows));
 
-    // ===== INSERT (REFRESH PAGINA FORZATO) =====
+    // ===== INSERT (refresh forzato) =====
     form.addEventListener("submit", async (ev) => {
       ev.preventDefault();
       btn.disabled = true;
@@ -393,6 +395,7 @@
       };
 
       try {
+        // fire-and-forget (no-cors) + refresh aggressivo lato frontend
         await fetch(WEB_APP_URL, {
           method: "POST",
           mode: "no-cors",
@@ -400,16 +403,19 @@
           body: JSON.stringify(payload)
         });
 
-        setStatus("Inserito. Aggiorno pagina…", "ok");
+        setStatus("Inserito. Aggiorno tabella…", "ok");
 
-        // ✅ QUI LA SOLA MODIFICA CHE VOLEVI:
-        // forzo il refresh pagina (niente “draghi”)
-        setTimeout(() => {
-          window.location.reload();
-        }, 350);
+        // refresh immediato + secondo refresh (Apps Script può essere “lento”)
+        refresh();
+        setTimeout(refresh, 600);
+
+        form.reset();
+        pillFactorEl.textContent = "—";
+        setTimeout(() => setStatus("OK.", "ok"), 500);
 
       } catch (e) {
         setStatus("Errore di rete: " + e, "err");
+      } finally {
         btn.disabled = false;
       }
     });
@@ -419,7 +425,6 @@
   </script>
 </body>
 </html>
-
 
 
 
