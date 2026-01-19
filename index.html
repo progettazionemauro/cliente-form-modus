@@ -9,10 +9,7 @@
     h1 { margin: 0 0 6px; }
     .muted { color: #666; font-size: 0.95rem; margin: 0 0 16px; }
 
-    .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-    @media (max-width: 920px) { .grid2 { grid-template-columns: 1fr; } }
-
-    .card { border: 1px solid #e5e5e5; border-radius: 10px; padding: 14px; background: #fafafa; }
+    .card { border: 1px solid #e5e5e5; border-radius: 10px; padding: 14px; background: #fafafa; margin-bottom: 14px; }
     label { display:block; margin: 10px 0 6px; font-weight: 600; }
     input, select, textarea {
       width: 100%;
@@ -57,166 +54,173 @@
     Inserisci nuove righe su Google Sheet e usa il viewer (solo lettura) per copiare il <b>recordId</b> (colonna A) e aggiornare/eliminare.
   </p>
 
-  <div class="grid2">
-    <!-- COLONNA SINISTRA: FORM -->
-    <div class="card">
-      <h3 style="margin:0 0 10px;">Nuova riga (Insert)</h3>
+  <!-- FORM: INSERT / UPDATE / DELETE -->
+  <div class="card">
+    <h3 style="margin:0 0 10px;">Nuova riga (Insert)</h3>
 
-      <form id="insertForm" autocomplete="on">
-        <label for="dataRilevazione">Data rilevazione</label>
-        <input id="dataRilevazione" name="dataRilevazione" type="date" required />
-        <div class="hint">Seleziona da calendario (salviamo nel foglio come gg/mm/aa).</div>
+    <form id="insertForm" autocomplete="on">
+      <label for="dataRilevazione">Data rilevazione</label>
+      <input id="dataRilevazione" name="dataRilevazione" type="date" required />
+      <div class="hint">Seleziona da calendario (salviamo nel foglio come gg/mm/aa).</div>
 
-        <label for="areaContesto">Area contesto</label>
-        <select id="areaContesto" name="areaContesto" required>
-          <option value="" selected disabled>Seleziona…</option>
-          <option>ECONOMICO</option>
-          <option>TECNOLOGICO</option>
-          <option>LEGALE</option>
-          <option>POLITICO / REGOLATORIO</option>
-          <option>SOCIALE</option>
-          <option>AMBIENTALE / CLIMATICO</option>
-          <option>MERCATO / DOMANDA</option>
-          <option>VENDITE E CUSTOMER CARE</option>
-          <option>AREA FINANZA</option>
-          <option>RISORSE UMANE</option>
-          <option>INFRASTRUTTURE / ASSET</option>
-          <option>SUPPLY CHAIN / FORNITORI</option>
-          <option>QUALITÀ E PROCESSI</option>
-          <option>CYBERSECURITY / IT</option>
-          <option>LOGISTICA</option>
-          <option>REPUTAZIONE / BRAND</option>
-          <option>CONCORRENZA</option>
-          <option>INNOVAZIONE / R&D</option>
-          <option>COMPLIANCE / ETICA</option>
-          <option>SALUTE E SICUREZZA (OHS)</option>
-        </select>
+      <label for="areaContesto">Area contesto</label>
+      <select id="areaContesto" name="areaContesto" required>
+        <option value="" selected disabled>Seleziona…</option>
+        <option>ECONOMICO</option>
+        <option>TECNOLOGICO</option>
+        <option>LEGALE</option>
+        <option>POLITICO / REGOLATORIO</option>
+        <option>SOCIALE</option>
+        <option>AMBIENTALE / CLIMATICO</option>
+        <option>MERCATO / DOMANDA</option>
+        <option>VENDITE E CUSTOMER CARE</option>
+        <option>AREA FINANZA</option>
+        <option>RISORSE UMANE</option>
+        <option>INFRASTRUTTURE / ASSET</option>
+        <option>SUPPLY CHAIN / FORNITORI</option>
+        <option>QUALITÀ E PROCESSI</option>
+        <option>CYBERSECURITY / IT</option>
+        <option>LOGISTICA</option>
+        <option>REPUTAZIONE / BRAND</option>
+        <option>CONCORRENZA</option>
+        <option>INNOVAZIONE / R&D</option>
+        <option>COMPLIANCE / ETICA</option>
+        <option>SALUTE E SICUREZZA (OHS)</option>
+      </select>
 
-        <label for="attivita">Attività</label>
-        <textarea id="attivita" name="attivita" required placeholder="Descrivi attività / processo / evento…"></textarea>
+      <label for="attivita">Attività</label>
+      <textarea id="attivita" name="attivita" required placeholder="Descrivi attività / processo / evento…"></textarea>
 
-        <label for="partiInteressate">Parti interessate</label>
-        <select id="partiInteressate" name="partiInteressate" required>
-          <option value="" selected disabled>Seleziona…</option>
-          <option>CLIENTI</option>
-          <option>PROSPECT / MERCATO POTENZIALE</option>
-          <option>COMPETITORS</option>
-          <option>FORNITORI</option>
-          <option>PARTNER / ALLEANZE</option>
-          <option>SOCIETÀ DI INGEGNERIA</option>
-          <option>STUDI DI ARCHITETTURA</option>
-          <option>CONSULENTI</option>
-          <option>ISTITUTI DI CREDITO / BANCHE</option>
-          <option>AGENZIA DELLE ENTRATE</option>
-          <option>INAIL</option>
-          <option>ENTI REGOLATORI / PA</option>
-          <option>ORGANISMI DI CERTIFICAZIONE</option>
-          <option>ASSICURAZIONI</option>
-          <option>DIPENDENTI</option>
-          <option>COLLABORATORI / FREELANCE</option>
-          <option>PROPRIETÀ / SOCI</option>
-          <option>COMUNITÀ LOCALE</option>
-          <option>ASSOCIAZIONI DI CATEGORIA</option>
-          <option>MEDIA / OPINIONE PUBBLICA</option>
-        </select>
+      <label for="partiInteressate">Parti interessate</label>
+      <select id="partiInteressate" name="partiInteressate" required>
+        <option value="" selected disabled>Seleziona…</option>
+        <option>CLIENTI</option>
+        <option>PROSPECT / MERCATO POTENZIALE</option>
+        <option>COMPETITORS</option>
+        <option>FORNITORI</option>
+        <option>PARTNER / ALLEANZE</option>
+        <option>SOCIETÀ DI INGEGNERIA</option>
+        <option>STUDI DI ARCHITETTURA</option>
+        <option>CONSULENTI</option>
+        <option>ISTITUTI DI CREDITO / BANCHE</option>
+        <option>AGENZIA DELLE ENTRATE</option>
+        <option>INAIL</option>
+        <option>ENTI REGOLATORI / PA</option>
+        <option>ORGANISMI DI CERTIFICAZIONE</option>
+        <option>ASSICURAZIONI</option>
+        <option>DIPENDENTI</option>
+        <option>COLLABORATORI / FREELANCE</option>
+        <option>PROPRIETÀ / SOCI</option>
+        <option>COMUNITÀ LOCALE</option>
+        <option>ASSOCIAZIONI DI CATEGORIA</option>
+        <option>MEDIA / OPINIONE PUBBLICA</option>
+      </select>
 
-        <label for="obiettivo">Obiettivo</label>
-        <textarea id="obiettivo" name="obiettivo" required placeholder="Obiettivo collegato al fattore (azione, risultato, KPI)…"></textarea>
+      <label for="obiettivo">Obiettivo</label>
+      <textarea id="obiettivo" name="obiettivo" required placeholder="Obiettivo collegato al fattore (azione, risultato, KPI)…"></textarea>
 
-        <label for="fattoreAnte">Fattore (ante) <span class="pill" id="pillFactor">—</span></label>
-        <select id="fattoreAnte" name="fattoreAnte" required>
-          <option value="" selected disabled>Seleziona…</option>
-          <option value="25|BASSA MINACCIA (E)">25 - BASSA MINACCIA (E)</option>
-          <option value="50|MEDIA MINACCIA (E)">50 - MEDIA MINACCIA (E)</option>
-          <option value="75|ESTREMA MINACCIA (E)">75 - ESTREMA MINACCIA (E)</option>
+      <label for="fattoreAnte">Fattore (ante) <span class="pill" id="pillFactor">—</span></label>
+      <select id="fattoreAnte" name="fattoreAnte" required>
+        <option value="" selected disabled>Seleziona…</option>
+        <option value="25|BASSA MINACCIA (E)">25 - BASSA MINACCIA (E)</option>
+        <option value="50|MEDIA MINACCIA (E)">50 - MEDIA MINACCIA (E)</option>
+        <option value="75|ESTREMA MINACCIA (E)">75 - ESTREMA MINACCIA (E)</option>
 
-          <option value="25|BASSA OPPORTUNITA (E)">25 - BASSA OPPORTUNITA (E)</option>
-          <option value="50|MEDIA OPPORTUNITA (E)">50 - MEDIA OPPORTUNITA (E)</option>
-          <option value="100|ESTREMA OPPORTUNITA (E)">100 - ESTREMA OPPORTUNITA (E)</option>
+        <option value="25|BASSA OPPORTUNITA (E)">25 - BASSA OPPORTUNITA (E)</option>
+        <option value="50|MEDIA OPPORTUNITA (E)">50 - MEDIA OPPORTUNITA (E)</option>
+        <option value="100|ESTREMA OPPORTUNITA (E)">100 - ESTREMA OPPORTUNITA (E)</option>
 
-          <option value="25|BASSA DEBOLEZZA (I)">25 - BASSA DEBOLEZZA (I)</option>
-          <option value="50|MEDIA DEBOLEZZA (I)">50 - MEDIA DEBOLEZZA (I)</option>
-          <option value="100|ESTREMA DEBOLEZZA (I)">100 - ESTREMA DEBOLEZZA (I)</option>
+        <option value="25|BASSA DEBOLEZZA (I)">25 - BASSA DEBOLEZZA (I)</option>
+        <option value="50|MEDIA DEBOLEZZA (I)">50 - MEDIA DEBOLEZZA (I)</option>
+        <option value="100|ESTREMA DEBOLEZZA (I)">100 - ESTREMA DEBOLEZZA (I)</option>
 
-          <option value="25|BASSA FORZA (I)">25 - BASSA FORZA (I)</option>
-          <option value="50|MEDIA FORZA (I)">50 - MEDIA FORZA (I)</option>
-          <option value="100|ESTREMA FORZA (I)">100 - ESTREMA FORZA (I)</option>
-        </select>
+        <option value="25|BASSA FORZA (I)">25 - BASSA FORZA (I)</option>
+        <option value="50|MEDIA FORZA (I)">50 - MEDIA FORZA (I)</option>
+        <option value="100|ESTREMA FORZA (I)">100 - ESTREMA FORZA (I)</option>
+      </select>
 
-        <!-- Honeypot -->
-        <div class="hidden">
-          <label>Se sei umano lascia vuoto</label>
-          <input name="hp" tabindex="-1" autocomplete="off" />
-        </div>
+      <!-- Honeypot -->
+      <div class="hidden">
+        <label>Se sei umano lascia vuoto</label>
+        <input name="hp" tabindex="-1" autocomplete="off" />
+      </div>
 
-        <div class="actions">
-          <button id="insertBtn" type="submit">Inserisci</button>
-          <span id="insertStatus" class="muted"></span>
-        </div>
-      </form>
+      <div class="actions">
+        <button id="insertBtn" type="submit">Inserisci</button>
+        <span id="insertStatus" class="muted"></span>
+      </div>
+    </form>
 
-      <div class="hr"></div>
+    <div class="hr"></div>
 
-      <h3 style="margin:0 0 10px;">Aggiorna riga (Update)</h3>
-      <p class="muted">Inserisci <b>recordId</b> (colonna A). Lascia vuoti i campi che non vuoi modificare.</p>
+    <h3 style="margin:0 0 10px;">Aggiorna riga (Update)</h3>
+    <p class="muted">Inserisci <b>recordId</b> (colonna A). Lascia vuoti i campi che non vuoi modificare.</p>
 
-      <form id="updateForm">
-        <label>recordId</label>
-        <input name="recordId" required placeholder="UUID (colonna A)">
+    <form id="updateForm">
+      <label>recordId</label>
+      <input name="recordId" required placeholder="UUID (colonna A)">
 
-        <label>Attività (opzionale)</label>
-        <textarea name="attivita" placeholder="Nuova attività (oppure lascia vuoto)"></textarea>
+      <label>Attività (opzionale)</label>
+      <textarea name="attivita" placeholder="Nuova attività (oppure lascia vuoto)"></textarea>
 
-        <label>Obiettivo (opzionale)</label>
-        <textarea name="obiettivo" placeholder="Nuovo obiettivo (oppure lascia vuoto)"></textarea>
+      <label>Obiettivo (opzionale)</label>
+      <textarea name="obiettivo" placeholder="Nuovo obiettivo (oppure lascia vuoto)"></textarea>
 
-        <div class="actions">
-          <button type="submit" class="secondary">Aggiorna</button>
-          <span id="updateStatus" class="muted"></span>
-        </div>
-      </form>
+      <div class="actions">
+        <button id="updateBtn" type="submit" class="secondary">Aggiorna</button>
+        <span id="updateStatus" class="muted"></span>
+      </div>
+    </form>
 
-      <div class="hr"></div>
+    <div class="hr"></div>
 
-      <h3 style="margin:0 0 10px;">Elimina riga (Delete)</h3>
-      <p class="muted">Inserisci <b>recordId</b> e conferma.</p>
+    <h3 style="margin:0 0 10px;">Elimina riga (Delete)</h3>
+    <p class="muted">Inserisci <b>recordId</b> e conferma.</p>
 
-      <form id="deleteForm">
-        <label>recordId</label>
-        <input name="recordId" required placeholder="UUID (colonna A)">
+    <form id="deleteForm">
+      <label>recordId</label>
+      <input name="recordId" required placeholder="UUID (colonna A)">
 
-        <label style="font-weight:400;">
-          <input type="checkbox" name="confirm" required>
-          Confermo eliminazione
-        </label>
+      <label style="font-weight:400;">
+        <input type="checkbox" name="confirm" required>
+        Confermo eliminazione
+      </label>
 
-        <div class="actions">
-          <button type="submit" class="danger">Elimina</button>
-          <span id="deleteStatus" class="muted"></span>
-        </div>
-      </form>
-    </div>
+      <div class="actions">
+        <button id="deleteBtn" type="submit" class="danger">Elimina</button>
+        <span id="deleteStatus" class="muted"></span>
+      </div>
+    </form>
+  </div>
 
-    <!-- COLONNA DESTRA: VIEWER -->
-    <div class="card">
-      <h3 style="margin:0 0 10px;">Viewer (Google Sheet – sola lettura)</h3>
-      <p class="muted">
-        Questo è il foglio pubblicato. Copia il <b>recordId</b> (colonna A) per Update/Delete.
-      </p>
+  <!-- VIEWER SOTTO -->
+  <div class="card">
+    <h3 style="margin:0 0 10px;">Viewer (Google Sheet – sola lettura)</h3>
+    <p class="muted">
+      Questo è il foglio pubblicato. Copia il <b>recordId</b> (colonna A) per Update/Delete.
+    </p>
 
- <iframe src="https://docs.google.com/spreadsheets/d/e/2PACX-1vTUnecuOwa6Pt3oHkGnR16o4bsQ0VV_MsdhZNx2cpz3fbpPFLqLur6B94ujVXdOPlTNFas_qc32UX3L/pubhtml?gid=1648418620&amp;single=true&amp;widget=true&amp;headers=false"></iframe>
-      <p class="muted" style="margin-top:10px;">
-        Nota: il viewer può avere un minimo di cache. Se non vedi subito, ricarica la pagina o apri il foglio in una nuova scheda.
-      </p>
+    <iframe
+      id="sheetFrame"
+      src="https://docs.google.com/spreadsheets/d/e/2PACX-1vTUnecuOwa6Pt3oHkGnR16o4bsQ0VV_MsdhZNx2cpz3fbpPFLqLur6B94ujVXdOPlTNFas_qc32UX3L/pubhtml?gid=1648418620&amp;single=true&amp;widget=true&amp;headers=false"
+      loading="lazy"
+    ></iframe>
+
+    <div class="actions">
+      <button id="viewerRefreshBtn" type="button" class="secondary">Aggiorna viewer</button>
+      <span class="muted" id="viewerHint">Nota: il viewer può avere cache; questo pulsante forza il refresh dell’iframe.</span>
     </div>
   </div>
 
   <script>
     // ===== CONFIG =====
+    // Lasciata come nel tuo file: se vuoi sostituirla con l'endpoint definitivo, cambia SOLO questa riga.
     const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyC0ITawwDVibDTKHYRqZWFe9bDXrSvl3mGtVY5WIPGEikNLfMLo5WwGbrNuHxJXot-/exec";
-    
     const API_KEY = "Djungo-Test-2026-01-17-chiave-lunga-XYZ";
     const pageLoadTs = Date.now();
+
+    // IFRAME base (senza cache bust)
+    const FRAME_BASE_SRC = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTUnecuOwa6Pt3oHkGnR16o4bsQ0VV_MsdhZNx2cpz3fbpPFLqLur6B94ujVXdOPlTNFas_qc32UX3L/pubhtml?gid=1648418620&single=true&widget=true&headers=false";
 
     function isoToDDMMYY(iso) {
       const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso);
@@ -229,6 +233,19 @@
       el.className = cls || "muted";
       el.textContent = msg;
     }
+
+    // ===== Viewer refresh (cache bust) =====
+    const sheetFrame = document.getElementById("sheetFrame");
+    const viewerRefreshBtn = document.getElementById("viewerRefreshBtn");
+
+    function refreshViewer() {
+      // aggiunge parametro fittizio per forzare reload
+      const url = new URL(FRAME_BASE_SRC);
+      url.searchParams.set("_", Date.now().toString());
+      sheetFrame.src = url.toString();
+    }
+
+    viewerRefreshBtn.addEventListener("click", refreshViewer);
 
     // ===== INSERT =====
     const insertForm = document.getElementById("insertForm");
@@ -291,9 +308,12 @@
           body: JSON.stringify(payload)
         });
 
-        setMsg(insertStatus, "Inserito. Controlla nel viewer a destra (potrebbe volerci un refresh).", "ok");
+        setMsg(insertStatus, "Inserito. Aggiorno il viewer…", "ok");
         insertForm.reset();
         pillFactorEl.textContent = "—";
+
+        // prova refresh viewer (cache bust)
+        refreshViewer();
 
       } catch (e) {
         setMsg(insertStatus, "Errore di rete: " + e, "err");
@@ -304,10 +324,12 @@
 
     // ===== UPDATE =====
     const updateForm = document.getElementById("updateForm");
+    const updateBtn = document.getElementById("updateBtn");
     const updateStatus = document.getElementById("updateStatus");
 
     updateForm.addEventListener("submit", async (ev) => {
       ev.preventDefault();
+      updateBtn.disabled = true;
       setMsg(updateStatus, "Aggiornamento in corso...", "muted");
 
       const fd = new FormData(updateForm);
@@ -317,10 +339,12 @@
 
       if (!recordId) {
         setMsg(updateStatus, "recordId obbligatorio.", "err");
+        updateBtn.disabled = false;
         return;
       }
       if (!attivita && !obiettivo) {
         setMsg(updateStatus, "Inserisci almeno un campo da aggiornare (Attività o Obiettivo).", "err");
+        updateBtn.disabled = false;
         return;
       }
 
@@ -342,20 +366,25 @@
           body: JSON.stringify(payload)
         });
 
-        setMsg(updateStatus, "OK. Aggiornato (controlla nel viewer; se serve fai refresh).", "ok");
+        setMsg(updateStatus, "OK. Aggiorno il viewer…", "ok");
         updateForm.reset();
+        refreshViewer();
 
       } catch (e) {
         setMsg(updateStatus, "Errore: " + e, "err");
+      } finally {
+        updateBtn.disabled = false;
       }
     });
 
     // ===== DELETE =====
     const deleteForm = document.getElementById("deleteForm");
+    const deleteBtn = document.getElementById("deleteBtn");
     const deleteStatus = document.getElementById("deleteStatus");
 
     deleteForm.addEventListener("submit", async (ev) => {
       ev.preventDefault();
+      deleteBtn.disabled = true;
       setMsg(deleteStatus, "Eliminazione in corso...", "muted");
 
       const fd = new FormData(deleteForm);
@@ -363,6 +392,7 @@
 
       if (!recordId) {
         setMsg(deleteStatus, "recordId obbligatorio.", "err");
+        deleteBtn.disabled = false;
         return;
       }
 
@@ -382,11 +412,14 @@
           body: JSON.stringify(payload)
         });
 
-        setMsg(deleteStatus, "OK. Eliminato (controlla nel viewer; se serve fai refresh).", "ok");
+        setMsg(deleteStatus, "OK. Aggiorno il viewer…", "ok");
         deleteForm.reset();
+        refreshViewer();
 
       } catch (e) {
         setMsg(deleteStatus, "Errore: " + e, "err");
+      } finally {
+        deleteBtn.disabled = false;
       }
     });
   </script>
