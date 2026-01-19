@@ -3,21 +3,16 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>ISO 9001 – SWOT (Form + Viewer)</title>
+  <title>ISO 9001 - Contesto & SWOT (Viewer + Form)</title>
   <style>
-    body { font-family: Arial, sans-serif; margin: 0; padding: 0; }
-    .wrap { max-width: 1100px; margin: 22px auto; padding: 0 16px; }
-
+    body { font-family: Arial, sans-serif; max-width: 1200px; margin: 28px auto; padding: 0 16px; }
     h1 { margin: 0 0 6px; }
-    .muted { color:#666; font-size: .95rem; margin: 0 0 14px; }
+    .muted { color: #666; font-size: 0.95rem; margin: 0 0 16px; }
 
-    /* FORM */
-    .card {
-      border: 1px solid #e5e5e5;
-      border-radius: 10px;
-      padding: 14px;
-      background: #fafafa;
-    }
+    .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    @media (max-width: 920px) { .grid2 { grid-template-columns: 1fr; } }
+
+    .card { border: 1px solid #e5e5e5; border-radius: 10px; padding: 14px; background: #fafafa; }
     label { display:block; margin: 10px 0 6px; font-weight: 600; }
     input, select, textarea {
       width: 100%;
@@ -41,7 +36,9 @@
       font-weight: 600;
     }
     button.secondary { background: #666; }
+    button.danger { background: #b00; }
     button:disabled { opacity: 0.6; cursor: not-allowed; }
+
     .ok { color: #0a6; font-weight: 600; }
     .err { color: #b00; font-weight: 600; }
 
@@ -49,53 +46,26 @@
     .hint { font-size: 0.9rem; color: #555; margin-top: 6px; }
     .hidden { display:none; }
 
-    /* VIEWER */
-    .viewer {
-      margin-top: 16px;
-    }
-    .toolbar {
-      display:flex; gap: 10px; align-items:center; flex-wrap: wrap;
-      margin: 10px 0;
-    }
-    .toolbar input { max-width: 320px; }
-
-    .table-wrap {
-      width: 100%;
-      overflow: auto;
-      border: 1px solid #e5e5e5;
-      border-radius: 10px;
-      background: #fff;
-      max-height: 560px;
-    }
-    table { width: 100%; border-collapse: collapse; }
-    th, td { border: 1px solid #eee; padding: 8px; vertical-align: top; }
-    th { background: #f4f4f4; text-align: left; position: sticky; top: 0; z-index: 1; }
-    .nowrap { white-space: nowrap; }
-
-    /* Color coding (SWOT) */
-    .tag { font-weight: 700; padding: 2px 6px; border-radius: 6px; display: inline-block; }
-    .risk-low  { background: #e7f5ff; color:#0b5394; }   /* soft blue */
-    .risk-mid  { background: #fff4e6; color:#7a4a00; }   /* soft orange */
-    .risk-high { background: #ffe3e3; color:#8a0000; }   /* soft red */
-    .pos-low   { background: #eafbea; color:#0b6b1c; }   /* soft green */
-    .pos-mid   { background: #d7f5dc; color:#0b6b1c; }
-    .pos-high  { background: #bff0c9; color:#0b6b1c; }
-
-    .small { color:#666; font-size: 12px; }
+    iframe { width: 100%; height: 620px; border: 1px solid #ddd; border-radius: 10px; background: #fff; }
+    .hr { height:1px; background:#e5e5e5; margin:12px 0; }
   </style>
 </head>
 
 <body>
-  <div class="wrap">
-    <h1>ISO 9001 – SWOT</h1>
-    <p class="muted">Inserimento + visualizzazione “tipo Excel” (frontend refresh forzato).</p>
+  <h1>ISO 9001 – Contesto & SWOT</h1>
+  <p class="muted">
+    Inserisci nuove righe su Google Sheet e usa il viewer (solo lettura) per copiare il <b>recordId</b> (colonna A) e aggiornare/eliminare.
+  </p>
 
-    <!-- FORM (in alto) -->
+  <div class="grid2">
+    <!-- COLONNA SINISTRA: FORM -->
     <div class="card">
-      <form id="f" autocomplete="on">
+      <h3 style="margin:0 0 10px;">Nuova riga (Insert)</h3>
+
+      <form id="insertForm" autocomplete="on">
         <label for="dataRilevazione">Data rilevazione</label>
         <input id="dataRilevazione" name="dataRilevazione" type="date" required />
-        <div class="hint">Seleziona dal calendario (salviamo in formato gg/mm/aa).</div>
+        <div class="hint">Seleziona da calendario (salviamo nel foglio come gg/mm/aa).</div>
 
         <label for="areaContesto">Area contesto</label>
         <select id="areaContesto" name="areaContesto" required>
@@ -156,7 +126,6 @@
         <label for="fattoreAnte">Fattore (ante) <span class="pill" id="pillFactor">—</span></label>
         <select id="fattoreAnte" name="fattoreAnte" required>
           <option value="" selected disabled>Seleziona…</option>
-
           <option value="25|BASSA MINACCIA (E)">25 - BASSA MINACCIA (E)</option>
           <option value="50|MEDIA MINACCIA (E)">50 - MEDIA MINACCIA (E)</option>
           <option value="75|ESTREMA MINACCIA (E)">75 - ESTREMA MINACCIA (E)</option>
@@ -181,62 +150,73 @@
         </div>
 
         <div class="actions">
-          <button id="btn" type="submit">Inserisci</button>
-          <button id="reloadBtn" class="secondary" type="button">Ricarica tabella</button>
-          <input id="search" type="text" placeholder="Cerca (testo libero)..." />
-          <span id="status" class="muted"></span>
-          <span class="muted" id="count"></span>
+          <button id="insertBtn" type="submit">Inserisci</button>
+          <span id="insertStatus" class="muted"></span>
+        </div>
+      </form>
+
+      <div class="hr"></div>
+
+      <h3 style="margin:0 0 10px;">Aggiorna riga (Update)</h3>
+      <p class="muted">Inserisci <b>recordId</b> (colonna A). Lascia vuoti i campi che non vuoi modificare.</p>
+
+      <form id="updateForm">
+        <label>recordId</label>
+        <input name="recordId" required placeholder="UUID (colonna A)">
+
+        <label>Attività (opzionale)</label>
+        <textarea name="attivita" placeholder="Nuova attività (oppure lascia vuoto)"></textarea>
+
+        <label>Obiettivo (opzionale)</label>
+        <textarea name="obiettivo" placeholder="Nuovo obiettivo (oppure lascia vuoto)"></textarea>
+
+        <div class="actions">
+          <button type="submit" class="secondary">Aggiorna</button>
+          <span id="updateStatus" class="muted"></span>
+        </div>
+      </form>
+
+      <div class="hr"></div>
+
+      <h3 style="margin:0 0 10px;">Elimina riga (Delete)</h3>
+      <p class="muted">Inserisci <b>recordId</b> e conferma.</p>
+
+      <form id="deleteForm">
+        <label>recordId</label>
+        <input name="recordId" required placeholder="UUID (colonna A)">
+
+        <label style="font-weight:400;">
+          <input type="checkbox" name="confirm" required>
+          Confermo eliminazione
+        </label>
+
+        <div class="actions">
+          <button type="submit" class="danger">Elimina</button>
+          <span id="deleteStatus" class="muted"></span>
         </div>
       </form>
     </div>
 
-    <!-- VIEWER (sotto, full width) -->
-    <div class="viewer">
-      <div class="table-wrap">
-        <table id="t">
-          <thead>
-            <tr>
-              <th class="nowrap">Data</th>
-              <th>Area contesto</th>
-              <th>SWOT</th>
-              <th class="nowrap">Grado</th>
-              <th class="nowrap">ID breve</th>
-            </tr>
-          </thead>
-          <tbody id="tb"></tbody>
-        </table>
-      </div>
-      <p class="small" style="margin:8px 4px 0;">
-        Nota: i colori sono applicati in GH Pages (non dipendono dalla formattazione di Google Sheets).
+    <!-- COLONNA DESTRA: VIEWER -->
+    <div class="card">
+      <h3 style="margin:0 0 10px;">Viewer (Google Sheet – sola lettura)</h3>
+      <p class="muted">
+        Questo è il foglio pubblicato. Copia il <b>recordId</b> (colonna A) per Update/Delete.
+      </p>
+
+ <iframe src="https://docs.google.com/spreadsheets/d/e/2PACX-1vTUnecuOwa6Pt3oHkGnR16o4bsQ0VV_MsdhZNx2cpz3fbpPFLqLur6B94ujVXdOPlTNFas_qc32UX3L/pubhtml?gid=1648418620&amp;single=true&amp;widget=true&amp;headers=false"></iframe>
+      <p class="muted" style="margin-top:10px;">
+        Nota: il viewer può avere un minimo di cache. Se non vedi subito, ricarica la pagina o apri il foglio in una nuova scheda.
       </p>
     </div>
   </div>
 
   <script>
     // ===== CONFIG =====
-    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbznxZL1iXMew8yhfTixVfmF1dPI9_VUzo2_52wWpXdGzJ1lKoCP3hPB2hcDJZKCPLjb/exec";
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyC0ITawwDVibDTKHYRqZWFe9bDXrSvl3mGtVY5WIPGEikNLfMLo5WwGbrNuHxJXot-/exec";
+    
     const API_KEY = "Djungo-Test-2026-01-17-chiave-lunga-XYZ";
-
-    // Timestamp per anti-bot (server-side)
     const pageLoadTs = Date.now();
-
-    const form = document.getElementById("f");
-    const statusEl = document.getElementById("status");
-    const btn = document.getElementById("btn");
-    const reloadBtn = document.getElementById("reloadBtn");
-    const searchEl = document.getElementById("search");
-    const countEl = document.getElementById("count");
-    const tb = document.getElementById("tb");
-
-    const fattoreAnteEl = document.getElementById("fattoreAnte");
-    const pillFactorEl = document.getElementById("pillFactor");
-
-    let currentRows = [];
-
-    function setStatus(msg, cls) {
-      statusEl.className = cls || "muted";
-      statusEl.textContent = msg;
-    }
 
     function isoToDDMMYY(iso) {
       const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso);
@@ -245,14 +225,17 @@
       return `${m[3]}/${m[2]}/${yy}`;
     }
 
-    function escapeHtml(s) {
-      return String(s)
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
+    function setMsg(el, msg, cls) {
+      el.className = cls || "muted";
+      el.textContent = msg;
     }
+
+    // ===== INSERT =====
+    const insertForm = document.getElementById("insertForm");
+    const insertBtn = document.getElementById("insertBtn");
+    const insertStatus = document.getElementById("insertStatus");
+    const fattoreAnteEl = document.getElementById("fattoreAnte");
+    const pillFactorEl = document.getElementById("pillFactor");
 
     fattoreAnteEl.addEventListener("change", () => {
       const v = (fattoreAnteEl.value || "");
@@ -261,109 +244,15 @@
       pillFactorEl.textContent = `${pct}% • ${label}`;
     });
 
-    // ===== JSONP LIST =====
-    function loadRows() {
-      return new Promise((resolve) => {
-        const cbName = "cb_" + Math.random().toString(36).slice(2);
-        window[cbName] = (data) => {
-          try { resolve(data); }
-          finally { delete window[cbName]; }
-        };
-
-        const s = document.createElement("script");
-        const url = new URL(WEB_APP_URL);
-        url.searchParams.set("mode", "list");
-        url.searchParams.set("apiKey", API_KEY);
-        url.searchParams.set("callback", cbName);
-        url.searchParams.set("limit", "400");
-        url.searchParams.set("_", Date.now().toString()); // cache buster
-
-        s.src = url.toString();
-        s.onerror = () => resolve({ ok: false, error: "JSONP load error" });
-        document.body.appendChild(s);
-
-        // cleanup
-        setTimeout(() => { try { document.body.removeChild(s); } catch (_) {} }, 1500);
-
-        // safety timeout (evita attese infinite)
-        setTimeout(() => resolve({ ok: false, error: "JSONP timeout" }), 5000);
-      });
-    }
-
-    function classifySwot(factorLabel, factorPct) {
-      const label = String(factorLabel || "").toUpperCase();
-      const pct = Number(factorPct || 0);
-
-      const isThreat = label.includes("MINACCIA") || label.includes("DEBOLEZZA");
-      const isOpportunity = label.includes("OPPORTUNITA") || label.includes("FORZA");
-
-      const level =
-        (pct >= 100 || pct >= 75) ? "high" :
-        (pct >= 50) ? "mid" : "low";
-
-      if (isThreat) return "risk-" + level;
-      if (isOpportunity) return "pos-" + level;
-      return "risk-low";
-    }
-
-    function render(rows) {
-      const q = (searchEl.value || "").trim().toLowerCase();
-      const filtered = !q ? rows : rows.filter(r => {
-        const blob = [
-          r.dataRilevazione, r.areaContesto, r.factorLabel,
-          String(r.factorPct || ""), r.recordId
-        ].join(" ").toLowerCase();
-        return blob.includes(q);
-      });
-
-      tb.innerHTML = "";
-
-      // mostro le più recenti in alto
-      const ordered = filtered.slice().reverse();
-
-      for (const r of ordered) {
-        const swotClass = classifySwot(r.factorLabel, r.factorPct);
-        const shortId = (r.recordId || "").slice(0, 8);
-
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-          <td class="nowrap">${escapeHtml(r.dataRilevazione || "")}</td>
-          <td>${escapeHtml(r.areaContesto || "")}</td>
-          <td><span class="tag ${swotClass}">${escapeHtml(r.factorLabel || "")}</span></td>
-          <td class="nowrap">${escapeHtml(String(r.factorPct || ""))}%</td>
-          <td class="nowrap"><code>${escapeHtml(shortId)}</code></td>
-        `;
-        tb.appendChild(tr);
-      }
-
-      countEl.textContent = `Righe: ${filtered.length} / ${rows.length}`;
-    }
-
-    async function refresh() {
-      countEl.textContent = "Caricamento...";
-      const data = await loadRows();
-      if (!data || !data.ok) {
-        countEl.textContent = "Errore caricamento.";
-        return;
-      }
-      currentRows = data.rows || [];
-      render(currentRows);
-    }
-
-    reloadBtn.addEventListener("click", refresh);
-    searchEl.addEventListener("input", () => render(currentRows));
-
-    // ===== INSERT (refresh forzato) =====
-    form.addEventListener("submit", async (ev) => {
+    insertForm.addEventListener("submit", async (ev) => {
       ev.preventDefault();
-      btn.disabled = true;
-      setStatus("Invio in corso...", "muted");
+      insertBtn.disabled = true;
+      setMsg(insertStatus, "Invio in corso...", "muted");
 
-      const fd = new FormData(form);
+      const fd = new FormData(insertForm);
 
       const isoDate = (fd.get("dataRilevazione") || "").toString().trim();
       const dataRilevazione = isoToDDMMYY(isoDate);
-
       const areaContesto = (fd.get("areaContesto") || "").toString().trim();
       const attivita = (fd.get("attivita") || "").toString().trim();
       const partiInteressate = (fd.get("partiInteressate") || "").toString().trim();
@@ -372,8 +261,8 @@
       const hp = (fd.get("hp") || "").toString();
 
       if (!dataRilevazione || !areaContesto || !attivita || !partiInteressate || !obiettivo || !fattoreAnte) {
-        setStatus("Compila tutti i campi obbligatori.", "err");
-        btn.disabled = false;
+        setMsg(insertStatus, "Compila tutti i campi obbligatori.", "err");
+        insertBtn.disabled = false;
         return;
       }
 
@@ -395,7 +284,6 @@
       };
 
       try {
-        // fire-and-forget (no-cors) + refresh aggressivo lato frontend
         await fetch(WEB_APP_URL, {
           method: "POST",
           mode: "no-cors",
@@ -403,29 +291,107 @@
           body: JSON.stringify(payload)
         });
 
-        setStatus("Inserito. Aggiorno tabella…", "ok");
-
-        // refresh immediato + secondo refresh (Apps Script può essere “lento”)
-        refresh();
-        setTimeout(refresh, 600);
-
-        form.reset();
+        setMsg(insertStatus, "Inserito. Controlla nel viewer a destra (potrebbe volerci un refresh).", "ok");
+        insertForm.reset();
         pillFactorEl.textContent = "—";
-        setTimeout(() => setStatus("OK.", "ok"), 500);
 
       } catch (e) {
-        setStatus("Errore di rete: " + e, "err");
+        setMsg(insertStatus, "Errore di rete: " + e, "err");
       } finally {
-        btn.disabled = false;
+        insertBtn.disabled = false;
       }
     });
 
-    // avvio
-    refresh();
+    // ===== UPDATE =====
+    const updateForm = document.getElementById("updateForm");
+    const updateStatus = document.getElementById("updateStatus");
+
+    updateForm.addEventListener("submit", async (ev) => {
+      ev.preventDefault();
+      setMsg(updateStatus, "Aggiornamento in corso...", "muted");
+
+      const fd = new FormData(updateForm);
+      const recordId = (fd.get("recordId") || "").toString().trim();
+      const attivita = (fd.get("attivita") || "").toString().trim();
+      const obiettivo = (fd.get("obiettivo") || "").toString().trim();
+
+      if (!recordId) {
+        setMsg(updateStatus, "recordId obbligatorio.", "err");
+        return;
+      }
+      if (!attivita && !obiettivo) {
+        setMsg(updateStatus, "Inserisci almeno un campo da aggiornare (Attività o Obiettivo).", "err");
+        return;
+      }
+
+      const payload = {
+        mode: "update",
+        apiKey: API_KEY,
+        ts: pageLoadTs,
+        hp: "",
+        recordId,
+        attivita,
+        obiettivo
+      };
+
+      try {
+        await fetch(WEB_APP_URL, {
+          method: "POST",
+          mode: "no-cors",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify(payload)
+        });
+
+        setMsg(updateStatus, "OK. Aggiornato (controlla nel viewer; se serve fai refresh).", "ok");
+        updateForm.reset();
+
+      } catch (e) {
+        setMsg(updateStatus, "Errore: " + e, "err");
+      }
+    });
+
+    // ===== DELETE =====
+    const deleteForm = document.getElementById("deleteForm");
+    const deleteStatus = document.getElementById("deleteStatus");
+
+    deleteForm.addEventListener("submit", async (ev) => {
+      ev.preventDefault();
+      setMsg(deleteStatus, "Eliminazione in corso...", "muted");
+
+      const fd = new FormData(deleteForm);
+      const recordId = (fd.get("recordId") || "").toString().trim();
+
+      if (!recordId) {
+        setMsg(deleteStatus, "recordId obbligatorio.", "err");
+        return;
+      }
+
+      const payload = {
+        mode: "delete",
+        apiKey: API_KEY,
+        ts: pageLoadTs,
+        hp: "",
+        recordId
+      };
+
+      try {
+        await fetch(WEB_APP_URL, {
+          method: "POST",
+          mode: "no-cors",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify(payload)
+        });
+
+        setMsg(deleteStatus, "OK. Eliminato (controlla nel viewer; se serve fai refresh).", "ok");
+        deleteForm.reset();
+
+      } catch (e) {
+        setMsg(deleteStatus, "Errore: " + e, "err");
+      }
+    });
   </script>
 </body>
 </html>
-
 
 
 
