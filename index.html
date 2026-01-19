@@ -45,6 +45,23 @@
 
     iframe { width: 100%; height: 620px; border: 1px solid #ddd; border-radius: 10px; background: #fff; }
     .hr { height:1px; background:#e5e5e5; margin:12px 0; }
+
+    /* ===== DISABILITAZIONE SEZIONI (Update/Delete) ===== */
+    .disabled-block {
+      opacity: 0.45;
+      pointer-events: none;   /* rende tutto non cliccabile */
+      filter: grayscale(1);
+    }
+    .badge-soon {
+      display: inline-block;
+      margin-left: 8px;
+      padding: 3px 8px;
+      border-radius: 999px;
+      background: #ddd;
+      color: #333;
+      font-size: 12px;
+      font-weight: 600;
+    }
   </style>
 </head>
 
@@ -153,44 +170,54 @@
 
     <div class="hr"></div>
 
-    <h3 style="margin:0 0 10px;">Aggiorna riga (Update)</h3>
-    <p class="muted">Inserisci <b>recordId</b> (colonna A). Lascia vuoti i campi che non vuoi modificare.</p>
+    <!-- ===== DISABILITATO: UPDATE + DELETE (visibili in grigio, non cliccabili) ===== -->
+    <div class="disabled-block">
+      <h3 style="margin:0 0 10px;">
+        Aggiorna riga (Update)
+        <span class="badge-soon">Prossima versione</span>
+      </h3>
+      <p class="muted">Inserisci <b>recordId</b> (colonna A). Lascia vuoti i campi che non vuoi modificare.</p>
 
-    <form id="updateForm">
-      <label>recordId</label>
-      <input name="recordId" required placeholder="UUID (colonna A)">
+      <form id="updateForm">
+        <label>recordId</label>
+        <input name="recordId" required placeholder="UUID (colonna A)">
 
-      <label>Attività (opzionale)</label>
-      <textarea name="attivita" placeholder="Nuova attività (oppure lascia vuoto)"></textarea>
+        <label>Attività (opzionale)</label>
+        <textarea name="attivita" placeholder="Nuova attività (oppure lascia vuoto)"></textarea>
 
-      <label>Obiettivo (opzionale)</label>
-      <textarea name="obiettivo" placeholder="Nuovo obiettivo (oppure lascia vuoto)"></textarea>
+        <label>Obiettivo (opzionale)</label>
+        <textarea name="obiettivo" placeholder="Nuovo obiettivo (oppure lascia vuoto)"></textarea>
 
-      <div class="actions">
-        <button id="updateBtn" type="submit" class="secondary">Aggiorna</button>
-        <span id="updateStatus" class="muted"></span>
-      </div>
-    </form>
+        <div class="actions">
+          <button id="updateBtn" type="submit" class="secondary">Aggiorna</button>
+          <span id="updateStatus" class="muted"></span>
+        </div>
+      </form>
 
-    <div class="hr"></div>
+      <div class="hr"></div>
 
-    <h3 style="margin:0 0 10px;">Elimina riga (Delete)</h3>
-    <p class="muted">Inserisci <b>recordId</b> e conferma.</p>
+      <h3 style="margin:0 0 10px;">
+        Elimina riga (Delete)
+        <span class="badge-soon">Prossima versione</span>
+      </h3>
+      <p class="muted">Inserisci <b>recordId</b> e conferma.</p>
 
-    <form id="deleteForm">
-      <label>recordId</label>
-      <input name="recordId" required placeholder="UUID (colonna A)">
+      <form id="deleteForm">
+        <label>recordId</label>
+        <input name="recordId" required placeholder="UUID (colonna A)">
 
-      <label style="font-weight:400;">
-        <input type="checkbox" name="confirm" required>
-        Confermo eliminazione
-      </label>
+        <label style="font-weight:400;">
+          <input type="checkbox" name="confirm" required>
+          Confermo eliminazione
+        </label>
 
-      <div class="actions">
-        <button id="deleteBtn" type="submit" class="danger">Elimina</button>
-        <span id="deleteStatus" class="muted"></span>
-      </div>
-    </form>
+        <div class="actions">
+          <button id="deleteBtn" type="submit" class="danger">Elimina</button>
+          <span id="deleteStatus" class="muted"></span>
+        </div>
+      </form>
+    </div>
+    <!-- ===== /DISABILITATO ===== -->
   </div>
 
   <!-- VIEWER SOTTO -->
@@ -214,8 +241,8 @@
 
   <script>
     // ===== CONFIG =====
-    // Lasciata come nel tuo file: se vuoi sostituirla con l'endpoint definitivo, cambia SOLO questa riga.
-    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyC0ITawwDVibDTKHYRqZWFe9bDXrSvl3mGtVY5WIPGEikNLfMLo5WwGbrNuHxJXot-/exec";
+    // IMPORTANTE: usa l'endpoint che mi hai indicato come "corretto"
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbznxZL1iXMew8yhfTixVfmF1dPI9_VUzo2_52wWpXdGzJ1lKoCP3hPB2hcDJZKCPLjb/exec";
     const API_KEY = "Djungo-Test-2026-01-17-chiave-lunga-XYZ";
     const pageLoadTs = Date.now();
 
@@ -239,7 +266,6 @@
     const viewerRefreshBtn = document.getElementById("viewerRefreshBtn");
 
     function refreshViewer() {
-      // aggiunge parametro fittizio per forzare reload
       const url = new URL(FRAME_BASE_SRC);
       url.searchParams.set("_", Date.now().toString());
       sheetFrame.src = url.toString();
@@ -312,7 +338,7 @@
         insertForm.reset();
         pillFactorEl.textContent = "—";
 
-        // prova refresh viewer (cache bust)
+        // refresh viewer (cache bust)
         refreshViewer();
 
       } catch (e) {
@@ -321,6 +347,10 @@
         insertBtn.disabled = false;
       }
     });
+
+    // Nota: gli handler Update/Delete restano nel file per sviluppo futuro,
+    // ma la UI è disabilitata via CSS (pointer-events: none).
+    // Quindi non verranno mai attivati dall’utente in questa versione.
 
     // ===== UPDATE =====
     const updateForm = document.getElementById("updateForm");
@@ -425,6 +455,7 @@
   </script>
 </body>
 </html>
+
 
 
 
