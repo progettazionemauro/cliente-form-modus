@@ -18,19 +18,25 @@
   <div id="tbl"></div>
 
   <script>
-    const WEB_APP_URL = "const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzAbGtc7m50w5ZKkHUB_M0GFPs5dn6Zi_ymdXAVtRwANL2ek-JbIdVLnimOXf9ZTtW1/exec";
+    // ==== config ricevuta da index.html ====
+    const qs = new URLSearchParams(location.search);
+    const WEB_APP_URL = qs.get("webApp");   // es: https://script.google.com/macros/s/.../exec
+    const API_KEY = qs.get("apiKey") || ""; // opzionale (se vuoi proteggere anche la view)
 
     function jsonp(url) {
       return new Promise((resolve, reject) => {
         const cbName = "cb_" + Math.random().toString(36).slice(2);
         const script = document.createElement("script");
         const timeout = setTimeout(() => { cleanup(); reject(new Error("Timeout JSONP")); }, 15000);
+
         function cleanup() {
           clearTimeout(timeout);
           script.remove();
           try { delete window[cbName]; } catch (_) { window[cbName] = undefined; }
         }
+
         window[cbName] = (data) => { cleanup(); resolve(data); };
+
         const u = new URL(url);
         u.searchParams.set("cb", cbName);
         script.src = u.toString();
@@ -40,21 +46,31 @@
     }
 
     function esc(s) {
-      return String(s ?? "").replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+      return String(s ?? "").replace(/[&<>"']/g, c => (
+        {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]
+      ));
     }
 
     async function load() {
       const status = document.getElementById("status");
       const tbl = document.getElementById("tbl");
 
+      if (!WEB_APP_URL) {
+        status.textContent = "Errore: manca parametro 'webApp' nell'URL del viewer (deve arrivare da index.html).";
+        return;
+      }
+
       try {
         const u = new URL(WEB_APP_URL);
         u.searchParams.set("mode", "view");
         u.searchParams.set("limit", "20");
+        if (API_KEY) u.searchParams.set("apiKey", API_KEY); // se il backend lo richiede anche per view
+
         const resp = await jsonp(u.toString());
+        console.log("VIEW resp =", resp);
 
         if (!resp || resp.ok !== true) {
-          status.textContent = "Errore: risposta non valida";
+          status.textContent = "Errore: " + (resp && resp.error ? resp.error : "risposta non valida");
           return;
         }
 
@@ -85,4 +101,5 @@
   </script>
 </body>
 </html>
+
 
