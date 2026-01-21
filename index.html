@@ -294,67 +294,86 @@
     const insertStatus = document.getElementById("insertStatus");
 
     insertForm.addEventListener("submit", async (ev) => {
-      ev.preventDefault();
-      insertBtn.disabled = true;
-      setMsg(insertStatus, "Invio in corso...", "muted");
+  ev.preventDefault();
+  insertBtn.disabled = true;
+  setMsg(insertStatus, "Invio in corso...", "muted");
 
-      const fd = new FormData(insertForm);
+  const fd = new FormData(insertForm);
 
-      // Validazione minima: fattore IE deve essere derivabile
-      const ieAnte = deriveIE((fd.get("swotAnte") || "").toString());
-      if (!ieAnte) {
-        setMsg(insertStatus, "Errore: SWOT (ANTE) deve contenere (E) oppure (I).", "err");
-        insertBtn.disabled = false;
-        return;
-      }
-      const swotPost = (fd.get("swotPost") || "").toString().trim();
-      if (swotPost && !deriveIE(swotPost)) {
-        setMsg(insertStatus, "Errore: SWOT (POST) deve contenere (E) oppure (I).", "err");
-        insertBtn.disabled = false;
-        return;
-      }
+  // Validazione minima: fattore IE deve essere derivabile
+  const swotAnteVal = (fd.get("swotAnte") || "").toString().trim();
+  const ieAnte = deriveIE(swotAnteVal);
+  if (!ieAnte) {
+    setMsg(insertStatus, "Errore: SWOT (ANTE) deve contenere (E) oppure (I).", "err");
+    insertBtn.disabled = false;
+    return;
+  }
 
-      const u = new URL(WEB_APP_URL);
-      u.searchParams.set("mode", "insert");
-      u.searchParams.set("apiKey", API_KEY);
+  const swotPostVal = (fd.get("swotPost") || "").toString().trim();
+  const iePost = swotPostVal ? deriveIE(swotPostVal) : "";
+  if (swotPostVal && !iePost) {
+    setMsg(insertStatus, "Errore: SWOT (POST) deve contenere (E) oppure (I).", "err");
+    insertBtn.disabled = false;
+    return;
+  }
 
-      // ANTE
-      u.searchParams.set("anno", (fd.get("anno") || "").toString().trim());
-      u.searchParams.set("contesto", (fd.get("contesto") || "").toString().trim());
-      u.searchParams.set("attivita", (fd.get("attivita") || "").toString().trim());
-      u.searchParams.set("partiInteressate", (fd.get("partiInteressate") || "").toString().trim());
-      u.searchParams.set("obiettivoAnte", (fd.get("obiettivoAnte") || "").toString().trim());
-      u.searchParams.set("swotAnte", (fd.get("swotAnte") || "").toString().trim());
-      u.searchParams.set("roAnte", (fd.get("roAnte") || "").toString().trim());
+  const u = new URL(WEB_APP_URL);
+  u.searchParams.set("mode", "insert");
+  u.searchParams.set("apiKey", API_KEY);
 
-      // POST (opzionale)
-      u.searchParams.set("annoPost", (fd.get("annoPost") || "").toString().trim());
-      u.searchParams.set("esitoPost", (fd.get("esitoPost") || "").toString().trim());
-      u.searchParams.set("swotPost", (fd.get("swotPost") || "").toString().trim());
-      u.searchParams.set("roPost", (fd.get("roPost") || "").toString().trim());
-      u.searchParams.set("commentoPost", (fd.get("commentoPost") || "").toString().trim());
+  // >>> DEBUG (mettilo QUI, una sola volta) <<<
+  u.searchParams.set("debug", "1");
 
-      try {
-        const resp = await jsonp(u.toString());
-        console.log("INSERT resp =", resp);
+  // ANTE
+  u.searchParams.set("anno", (fd.get("anno") || "").toString().trim());
+  u.searchParams.set("contesto", (fd.get("contesto") || "").toString().trim());
+  u.searchParams.set("attivita", (fd.get("attivita") || "").toString().trim());
+  u.searchParams.set("partiInteressate", (fd.get("partiInteressate") || "").toString().trim());
+  u.searchParams.set("obiettivoAnte", (fd.get("obiettivoAnte") || "").toString().trim());
+  u.searchParams.set("swotAnte", swotAnteVal);
 
-        if (!resp || resp.ok !== true) {
-          setMsg(insertStatus, "Errore: " + (resp && resp.error ? resp.error : "Risposta non valida"), "err");
-          return;
-        }
+  // >>> AUTO derivati da SWOT (consigliato inviarli per evitare mismatch col backend) <<<
+  u.searchParams.set("fattoreIEAnte", ieAnte);
 
-        setMsg(insertStatus, `Inserito (ID=${resp.id || "?"}). Aggiorno viewer…`, "ok");
-        insertForm.reset();
-        fattoreIEAnteEl.value = "";
-        fattoreIEPostEl.value = "";
-        loadViewer(true);
+  // R/O (se vuoi che lo calcoli Sheets, puoi anche NON inviarlo; ma se Code.gs lo richiede, invialo)
+  u.searchParams.set("roAnte", (fd.get("roAnte") || "").toString().trim());
 
-      } catch (e) {
-        setMsg(insertStatus, "Errore rete/JSONP: " + e.message, "err");
-      } finally {
-        insertBtn.disabled = false;
-      }
-    });
+  // POST (opzionale) — attenzione: nel tuo HTML si chiama annoRilevazionePost
+  u.searchParams.set("annoRilevazionePost", (fd.get("annoRilevazionePost") || "").toString().trim()); // YYYY-MM-DD oppure "" se vuoto
+  u.searchParams.set("esitoPost", (fd.get("esitoPost") || "").toString().trim());
+  u.searchParams.set("swotPost", swotPostVal);
+
+  // >>> AUTO derivato da SWOT POST <<<
+  u.searchParams.set("fattoreIEPost", iePost);
+
+  u.searchParams.set("roPost", (fd.get("roPost") || "").toString().trim());
+  u.searchParams.set("commentoPost", (fd.get("commentoPost") || "").toString().trim());
+
+  try {
+    const resp = await jsonp(u.toString());
+    console.log("INSERT resp =", JSON.stringify(resp, null, 2));
+
+    if (!resp || resp.ok !== true) {
+      setMsg(insertStatus, "Errore: " + (resp && resp.error ? resp.error : "Risposta non valida"), "err");
+      return;
+    }
+
+    setMsg(insertStatus, `Inserito (ID=${resp.id || "?"}). Aggiorno viewer…`, "ok");
+    insertForm.reset();
+
+    // Se hai campi auto visivi in pagina, azzerali (se esistono davvero nel tuo DOM)
+    if (typeof fattoreIEAnteEl !== "undefined" && fattoreIEAnteEl) fattoreIEAnteEl.value = "";
+    if (typeof fattoreIEPostEl !== "undefined" && fattoreIEPostEl) fattoreIEPostEl.value = "";
+
+    loadViewer(true);
+
+  } catch (e) {
+    setMsg(insertStatus, "Errore rete/JSONP: " + e.message, "err");
+  } finally {
+    insertBtn.disabled = false;
+  }
+});
+
   </script>
 </body>
 </html>
