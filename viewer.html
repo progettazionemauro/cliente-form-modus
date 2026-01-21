@@ -3,104 +3,86 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>SWOT_input Viewer</title>
+  <title>Viewer SWOT_input</title>
   <style>
     body { font-family: Arial, sans-serif; margin: 12px; }
-    .muted { color:#666; font-size: 0.95rem; margin: 0 0 10px; }
-    .wrap { overflow:auto; border:1px solid #e5e5e5; border-radius:10px; background:#fff; }
-    table { border-collapse: collapse; width: 100%; min-width: 980px; }
-    th, td { border: 1px solid #eee; padding: 8px; vertical-align: top; font-size: 13px; }
-    th { position: sticky; top: 0; background: #fafafa; z-index: 1; text-align:left; }
-    .err { color:#b00; font-weight:600; }
+    .muted { color:#666; }
+    table { border-collapse: collapse; width: 100%; }
+    th, td { border:1px solid #e5e5e5; padding:8px; vertical-align: top; font-size: 13px; }
+    th { background:#f5f5f5; position: sticky; top: 0; z-index: 1; }
   </style>
 </head>
 <body>
-  <p class="muted">Viewer (max 20 righe) da <b>SWOT_input</b>.</p>
-  <div id="status" class="muted"></div>
-  <div class="wrap" id="wrap"></div>
+  <div class="muted">Viewer (max 20 righe) da <b>SWOT_input</b>.</div>
+  <div id="status" class="muted" style="margin:6px 0;">Caricamento…</div>
+  <div id="tbl"></div>
 
   <script>
-    // ===== CONFIG SHEET =====
-    const SPREADSHEET_ID = "1-2yN05FqdCOPSgg4O5gRwUkNvMYVjt6gknBt3NRds38";
-    const GID = "237157272"; // SWOT_input
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxysWih1qJkwehGqOQ6wPXGLLs3TO_j0KOGDe-v4J-EIKNZdCI354vZ1cVStOxq0fJN/exec";
 
-    // 14 colonne: A..N
-    // Query: prende intestazione + 20 righe dopo header (assumendo riga 1 header)
-    // Nota: gviz include header nel risultato, noi renderizziamo tutto come tabella.
-    const TQ = "select A,B,C,D,E,F,G,H,I,J,K,L,M,N limit 20";
-
-    function setStatus(msg, isErr=false) {
-      const el = document.getElementById("status");
-      el.className = isErr ? "err" : "muted";
-      el.textContent = msg;
-    }
-
-    function buildUrl() {
-      const base = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/gviz/tq`;
-      const u = new URL(base);
-      u.searchParams.set("gid", GID);
-      u.searchParams.set("tq", TQ);
-      u.searchParams.set("tqx", "out:json");
-      // cache bust
-      u.searchParams.set("_", Date.now().toString());
-      return u.toString();
-    }
-
-    function parseGviz(text) {
-      // Risposta tipica: "google.visualization.Query.setResponse({...});"
-      const m = text.match(/setResponse\(([\s\S]*?)\);\s*$/);
-      if (!m) throw new Error("Formato gviz non riconosciuto.");
-      return JSON.parse(m[1]);
-    }
-
-    function renderTable(gviz) {
-      const wrap = document.getElementById("wrap");
-      wrap.innerHTML = "";
-
-      const table = document.createElement("table");
-      const thead = document.createElement("thead");
-      const tbody = document.createElement("tbody");
-
-      const cols = (gviz.table && gviz.table.cols) ? gviz.table.cols : [];
-      const rows = (gviz.table && gviz.table.rows) ? gviz.table.rows : [];
-
-      // header
-      const trh = document.createElement("tr");
-      cols.forEach(c => {
-        const th = document.createElement("th");
-        th.textContent = c.label || "";
-        trh.appendChild(th);
+    function jsonp(url) {
+      return new Promise((resolve, reject) => {
+        const cbName = "cb_" + Math.random().toString(36).slice(2);
+        const script = document.createElement("script");
+        const timeout = setTimeout(() => { cleanup(); reject(new Error("Timeout JSONP")); }, 15000);
+        function cleanup() {
+          clearTimeout(timeout);
+          script.remove();
+          try { delete window[cbName]; } catch (_) { window[cbName] = undefined; }
+        }
+        window[cbName] = (data) => { cleanup(); resolve(data); };
+        const u = new URL(url);
+        u.searchParams.set("cb", cbName);
+        script.src = u.toString();
+        script.onerror = () => { cleanup(); reject(new Error("JSONP load error")); };
+        document.body.appendChild(script);
       });
-      thead.appendChild(trh);
-
-      // body
-      rows.forEach(r => {
-        const tr = document.createElement("tr");
-        (r.c || []).forEach(cell => {
-          const td = document.createElement("td");
-          td.textContent = (cell && (cell.f != null ? cell.f : cell.v != null ? cell.v : "")) || "";
-          tr.appendChild(td);
-        });
-        tbody.appendChild(tr);
-      });
-
-      table.appendChild(thead);
-      table.appendChild(tbody);
-      wrap.appendChild(table);
     }
 
-    (async function init() {
+    function esc(s) {
+      return String(s ?? "").replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    }
+
+    async function load() {
+      const status = document.getElementById("status");
+      const tbl = document.getElementById("tbl");
+
       try {
-        setStatus("Caricamento…");
-        const resp = await fetch(buildUrl(), { cache: "no-store" });
-        const text = await resp.text();
-        const gviz = parseGviz(text);
-        renderTable(gviz);
-        setStatus("OK");
+        const u = new URL(WEB_APP_URL);
+        u.searchParams.set("mode", "view");
+        u.searchParams.set("limit", "20");
+        const resp = await jsonp(u.toString());
+
+        if (!resp || resp.ok !== true) {
+          status.textContent = "Errore: risposta non valida";
+          return;
+        }
+
+        status.textContent = "OK";
+
+        const headers = resp.headers || [];
+        const rows = resp.rows || [];
+
+        let html = "<table><thead><tr>";
+        for (const h of headers) html += `<th>${esc(h)}</th>`;
+        html += "</tr></thead><tbody>";
+
+        for (const r of rows) {
+          html += "<tr>";
+          for (let i=0; i<headers.length; i++) html += `<td>${esc(r[i])}</td>`;
+          html += "</tr>";
+        }
+
+        html += "</tbody></table>";
+        tbl.innerHTML = html;
+
       } catch (e) {
-        setStatus("Errore viewer: " + e.message, true);
+        status.textContent = "Errore: " + e.message;
       }
-    })();
+    }
+
+    load();
   </script>
 </body>
 </html>
+
