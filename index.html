@@ -20,6 +20,7 @@
     .err { color: #b00; font-weight: 600; }
     iframe { width: 100%; height: 620px; border: 1px solid #ddd; border-radius: 10px; background: #fff; }
     details { background:#fff; border:1px solid #e5e5e5; border-radius:8px; padding:10px; margin-top:12px; }
+    .readonly-hint { font-size: 0.9rem; color:#555; margin-top: 6px; }
   </style>
 </head>
 
@@ -31,11 +32,11 @@
     <h3 style="margin:0 0 10px;">Nuova riga (ANTE + POST opzionale)</h3>
 
     <form id="insertForm" autocomplete="on">
-      <label>Anno (ANTE)</label>
-      <input name="anno" required placeholder="Es. 2025" inputmode="numeric" />
+      <label for="anno">Anno (ANTE)</label>
+      <select id="anno" name="anno" required></select>
 
-      <label>Contesto (ANTE)</label>
-      <select name="contesto" required>
+      <label for="contesto">Contesto (ANTE)</label>
+      <select id="contesto" name="contesto" required>
         <option value="" selected disabled>Seleziona…</option>
         <option>ECONOMICO</option>
         <option>TECNOLOGICO</option>
@@ -59,11 +60,11 @@
         <option>SALUTE E SICUREZZA (OHS)</option>
       </select>
 
-      <label>Attività</label>
-      <textarea name="attivita" required></textarea>
+      <label for="attivita">Attività</label>
+      <textarea id="attivita" name="attivita" required></textarea>
 
-      <label>Parti interessate (ANTE)</label>
-      <select name="partiInteressate" required>
+      <label for="partiInteressate">Parti interessate (ANTE)</label>
+      <select id="partiInteressate" name="partiInteressate" required>
         <option value="" selected disabled>Seleziona…</option>
         <option>CLIENTI</option>
         <option>PROSPECT / MERCATO POTENZIALE</option>
@@ -87,11 +88,11 @@
         <option>MEDIA / OPINIONE PUBBLICA</option>
       </select>
 
-      <label>Obiettivo (ANTE)</label>
-      <textarea name="obiettivoAnte" required></textarea>
+      <label for="obiettivoAnte">Obiettivo (ANTE)</label>
+      <textarea id="obiettivoAnte" name="obiettivoAnte" required></textarea>
 
-      <label>SWOT (ANTE)</label>
-      <select name="swotAnte" required>
+      <label for="swotAnte">SWOT (ANTE)</label>
+      <select id="swotAnte" name="swotAnte" required>
         <option value="" selected disabled>Seleziona…</option>
         <option>25 - BASSA MINACCIA (E)</option>
         <option>50 - MEDIA MINACCIA (E)</option>
@@ -107,15 +108,12 @@
         <option>100 - ESTREMA FORZA (I)</option>
       </select>
 
-      <label>Fattore Interno - Esterno (ANTE)</label>
-      <select name="fattoreIeAnte" required>
-        <option value="" selected disabled>Seleziona…</option>
-        <option>Fattore Interno</option>
-        <option>Fattore Esterno</option>
-      </select>
+      <label for="fattoreIEAnte">Fattore Interno - Esterno (ANTE) (auto)</label>
+      <input id="fattoreIEAnte" name="fattoreIEAnte" readonly />
+      <div class="readonly-hint">Derivato automaticamente da SWOT: (E)=Esterno, (I)=Interno.</div>
 
-      <label>R / O (ANTE)</label>
-      <select name="roAnte" required>
+      <label for="roAnte">R / O (ANTE)</label>
+      <select id="roAnte" name="roAnte" required>
         <option value="" selected disabled>Seleziona…</option>
         <option>RISCHIO</option>
         <option>OPPORTUNITA'</option>
@@ -124,18 +122,18 @@
       <details>
         <summary><b>Sezione POST (opzionale)</b></summary>
 
-        <label>Anno di Rilevazione (POST) — formato data</label>
-        <input name="annoRilevazionePost" type="date" />
+        <label for="annoPost">Anno di Rilevazione (POST)</label>
+        <select id="annoPost" name="annoPost"></select>
 
-        <label>Esito POST</label>
-        <select name="esitoPost">
+        <label for="esitoPost">Esito POST</label>
+        <select id="esitoPost" name="esitoPost">
           <option value="" selected>—</option>
           <option>RAGGIUNTO</option>
           <option>NON RAGGIUNTO</option>
         </select>
 
-        <label>SWOT (POST)</label>
-        <select name="swotPost">
+        <label for="swotPost">SWOT (POST)</label>
+        <select id="swotPost" name="swotPost">
           <option value="" selected>—</option>
           <option>25 - BASSA MINACCIA (E)</option>
           <option>50 - MEDIA MINACCIA (E)</option>
@@ -151,22 +149,19 @@
           <option>100 - ESTREMA FORZA (I)</option>
         </select>
 
-        <label>Fattore Interno - Esterno (POST)</label>
-        <select name="fattoreIePost">
-          <option value="" selected>—</option>
-          <option>Fattore Interno</option>
-          <option>Fattore Esterno</option>
-        </select>
+        <label for="fattoreIEPost">Fattore Interno - Esterno (POST) (auto)</label>
+        <input id="fattoreIEPost" name="fattoreIEPost" readonly />
+        <div class="readonly-hint">Derivato automaticamente da SWOT: (E)=Esterno, (I)=Interno.</div>
 
-        <label>R / O (POST)</label>
-        <select name="roPost">
+        <label for="roPost">R / O (POST)</label>
+        <select id="roPost" name="roPost">
           <option value="" selected>—</option>
           <option>RISCHIO</option>
           <option>OPPORTUNITA'</option>
         </select>
 
-        <label>Commento POST</label>
-        <textarea name="commentoPost" placeholder="Note / motivazioni / cambiamenti"></textarea>
+        <label for="commentoPost">Commento POST</label>
+        <textarea id="commentoPost" name="commentoPost" placeholder="Note / motivazioni / cambiamenti"></textarea>
       </details>
 
       <div class="actions">
@@ -220,7 +215,55 @@
       });
     }
 
-    // ===== viewer iframe =====
+    // ===== anni dropdown 2020-2030 =====
+    function fillYears(selectEl, start=2020, end=2030, allowEmpty=false) {
+      selectEl.innerHTML = "";
+      if (allowEmpty) {
+        const opt0 = document.createElement("option");
+        opt0.value = "";
+        opt0.textContent = "—";
+        selectEl.appendChild(opt0);
+      } else {
+        const opt0 = document.createElement("option");
+        opt0.value = "";
+        opt0.textContent = "Seleziona…";
+        opt0.disabled = true;
+        opt0.selected = true;
+        selectEl.appendChild(opt0);
+      }
+      for (let y=start; y<=end; y++) {
+        const opt = document.createElement("option");
+        opt.value = String(y);
+        opt.textContent = String(y);
+        selectEl.appendChild(opt);
+      }
+    }
+
+    fillYears(document.getElementById("anno"), 2020, 2030, false);
+    fillYears(document.getElementById("annoPost"), 2020, 2030, true);
+
+    // ===== derivazione Fattore IE da SWOT =====
+    function deriveIE(swotText) {
+      const s = String(swotText || "");
+      if (s.includes("(E)")) return "Fattore Esterno";
+      if (s.includes("(I)")) return "Fattore Interno";
+      return "";
+    }
+
+    const swotAnteEl = document.getElementById("swotAnte");
+    const swotPostEl = document.getElementById("swotPost");
+    const fattoreIEAnteEl = document.getElementById("fattoreIEAnte");
+    const fattoreIEPostEl = document.getElementById("fattoreIEPost");
+
+    swotAnteEl.addEventListener("change", () => {
+      fattoreIEAnteEl.value = deriveIE(swotAnteEl.value);
+    });
+
+    swotPostEl.addEventListener("change", () => {
+      fattoreIEPostEl.value = deriveIE(swotPostEl.value);
+    });
+
+    // ===== viewer iframe (passa config al viewer una sola volta) =====
     const sheetFrame = document.getElementById("sheetFrame");
     const viewerRefreshBtn = document.getElementById("viewerRefreshBtn");
 
@@ -231,11 +274,8 @@
     function viewerUrl(cacheBust) {
       const base = currentDirBase();
       const u = new URL(base + "viewer.html", window.location.origin);
-
-      // passaggio config a viewer.html
       u.searchParams.set("webApp", WEB_APP_URL);
       u.searchParams.set("apiKey", API_KEY);
-
       if (cacheBust) u.searchParams.set("_", Date.now().toString());
       return u.toString();
     }
@@ -259,6 +299,20 @@
 
       const fd = new FormData(insertForm);
 
+      // Validazione minima: fattore IE deve essere derivabile
+      const ieAnte = deriveIE((fd.get("swotAnte") || "").toString());
+      if (!ieAnte) {
+        setMsg(insertStatus, "Errore: SWOT (ANTE) deve contenere (E) oppure (I).", "err");
+        insertBtn.disabled = false;
+        return;
+      }
+      const swotPost = (fd.get("swotPost") || "").toString().trim();
+      if (swotPost && !deriveIE(swotPost)) {
+        setMsg(insertStatus, "Errore: SWOT (POST) deve contenere (E) oppure (I).", "err");
+        insertBtn.disabled = false;
+        return;
+      }
+
       const u = new URL(WEB_APP_URL);
       u.searchParams.set("mode", "insert");
       u.searchParams.set("apiKey", API_KEY);
@@ -270,14 +324,12 @@
       u.searchParams.set("partiInteressate", (fd.get("partiInteressate") || "").toString().trim());
       u.searchParams.set("obiettivoAnte", (fd.get("obiettivoAnte") || "").toString().trim());
       u.searchParams.set("swotAnte", (fd.get("swotAnte") || "").toString().trim());
-      u.searchParams.set("fattoreIeAnte", (fd.get("fattoreIeAnte") || "").toString().trim());
       u.searchParams.set("roAnte", (fd.get("roAnte") || "").toString().trim());
 
       // POST (opzionale)
-      u.searchParams.set("annoRilevazionePost", (fd.get("annoRilevazionePost") || "").toString().trim()); // YYYY-MM-DD
+      u.searchParams.set("annoPost", (fd.get("annoPost") || "").toString().trim());
       u.searchParams.set("esitoPost", (fd.get("esitoPost") || "").toString().trim());
       u.searchParams.set("swotPost", (fd.get("swotPost") || "").toString().trim());
-      u.searchParams.set("fattoreIePost", (fd.get("fattoreIePost") || "").toString().trim());
       u.searchParams.set("roPost", (fd.get("roPost") || "").toString().trim());
       u.searchParams.set("commentoPost", (fd.get("commentoPost") || "").toString().trim());
 
@@ -292,6 +344,8 @@
 
         setMsg(insertStatus, `Inserito (ID=${resp.id || "?"}). Aggiorno viewer…`, "ok");
         insertForm.reset();
+        fattoreIEAnteEl.value = "";
+        fattoreIEPostEl.value = "";
         loadViewer(true);
 
       } catch (e) {
@@ -303,6 +357,7 @@
   </script>
 </body>
 </html>
+
 
 
 
