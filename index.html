@@ -25,53 +25,145 @@
 
 <body>
   <h1>ISO 9001 – Contesto & SWOT</h1>
-  <p class="muted">Inserimento su <b>SWOT_input</b>. Il viewer mostra un estratto (max 20 righe).</p>
+  <p class="muted">Inserimento su <b>SWOT_input</b>. Viewer: estratto max 20 righe.</p>
 
   <div class="card">
     <h3 style="margin:0 0 10px;">Nuova riga (ANTE + POST opzionale)</h3>
 
     <form id="insertForm" autocomplete="on">
-      <label>Anno</label>
-      <input name="anno" required placeholder="Es. 2025" />
+      <label>Anno (ANTE)</label>
+      <input name="anno" required placeholder="Es. 2025" inputmode="numeric" />
 
-      <label>Contesto</label>
-      <input name="contesto" required placeholder="Es. QUALITÀ E PROCESSI" />
+      <label>Contesto (ANTE)</label>
+      <select name="contesto" required>
+        <option value="" selected disabled>Seleziona…</option>
+        <option>ECONOMICO</option>
+        <option>TECNOLOGICO</option>
+        <option>LEGALE</option>
+        <option>POLITICO / REGOLATORIO</option>
+        <option>SOCIALE</option>
+        <option>AMBIENTALE / CLIMATICO</option>
+        <option>MERCATO / DOMANDA</option>
+        <option>VENDITE E CUSTOMER CARE</option>
+        <option>AREA FINANZA</option>
+        <option>RISORSE UMANE</option>
+        <option>INFRASTRUTTURE / ASSET</option>
+        <option>SUPPLY CHAIN / FORNITORI</option>
+        <option>QUALITÀ E PROCESSI</option>
+        <option>CYBERSECURITY / IT</option>
+        <option>LOGISTICA</option>
+        <option>REPUTAZIONE / BRAND</option>
+        <option>CONCORRENZA</option>
+        <option>INNOVAZIONE / R&D</option>
+        <option>COMPLIANCE / ETICA</option>
+        <option>SALUTE E SICUREZZA (OHS)</option>
+      </select>
 
       <label>Attività</label>
       <textarea name="attivita" required></textarea>
 
-      <label>Parti interessate</label>
-      <input name="partiInteressate" required placeholder="Es. CLIENTI" />
+      <label>Parti interessate (ANTE)</label>
+      <select name="partiInteressate" required>
+        <option value="" selected disabled>Seleziona…</option>
+        <option>CLIENTI</option>
+        <option>PROSPECT / MERCATO POTENZIALE</option>
+        <option>COMPETITORS</option>
+        <option>FORNITORI</option>
+        <option>PARTNER / ALLEANZE</option>
+        <option>SOCIETÀ DI INGEGNERIA</option>
+        <option>STUDI DI ARCHITETTURA</option>
+        <option>CONSULENTI</option>
+        <option>ISTITUTI DI CREDITO / BANCHE</option>
+        <option>AGENZIA DELLE ENTRATE</option>
+        <option>INAIL</option>
+        <option>ENTI REGOLATORI / PA</option>
+        <option>ORGANISMI DI CERTIFICAZIONE</option>
+        <option>ASSICURAZIONI</option>
+        <option>DIPENDENTI</option>
+        <option>COLLABORATORI / FREELANCE</option>
+        <option>PROPRIETÀ / SOCI</option>
+        <option>COMUNITÀ LOCALE</option>
+        <option>ASSOCIAZIONI DI CATEGORIA</option>
+        <option>MEDIA / OPINIONE PUBBLICA</option>
+      </select>
 
-      <label>Obiettivo (Ante)</label>
+      <label>Obiettivo (ANTE)</label>
       <textarea name="obiettivoAnte" required></textarea>
 
-      <label>SWOT (Ante)</label>
-      <input name="swotAnte" required placeholder="Es. 50 - MEDIA OPPORTUNITA (E)" />
+      <label>SWOT (ANTE)</label>
+      <select name="swotAnte" required>
+        <option value="" selected disabled>Seleziona…</option>
+        <option>25 - BASSA MINACCIA (E)</option>
+        <option>50 - MEDIA MINACCIA (E)</option>
+        <option>75 - ESTREMA MINACCIA (E)</option>
+        <option>25 - BASSA OPPORTUNITA (E)</option>
+        <option>50 - MEDIA OPPORTUNITA (E)</option>
+        <option>100 - ESTREMA OPPORTUNITA (E)</option>
+        <option>25 - BASSA DEBOLEZZA (I)</option>
+        <option>50 - MEDIA DEBOLEZZA (I)</option>
+        <option>100 - ESTREMA DEBOLEZZA (I)</option>
+        <option>25 - BASSA FORZA (I)</option>
+        <option>50 - MEDIA FORZA (I)</option>
+        <option>100 - ESTREMA FORZA (I)</option>
+      </select>
 
-      <label>Fattore Interno - Esterno (Ante)</label>
-      <input name="fattoreIEAnte" required placeholder="Es. Fattore Esterno" />
+      <label>Fattore Interno - Esterno (ANTE)</label>
+      <select name="fattoreIeAnte" required>
+        <option value="" selected disabled>Seleziona…</option>
+        <option>Fattore Interno</option>
+        <option>Fattore Esterno</option>
+      </select>
 
-      <label>R / O (Ante)</label>
-      <input name="roAnte" required placeholder="Es. OPPORTUNITA' / RISCHIO" />
+      <label>R / O (ANTE)</label>
+      <select name="roAnte" required>
+        <option value="" selected disabled>Seleziona…</option>
+        <option>RISCHIO</option>
+        <option>OPPORTUNITA'</option>
+      </select>
 
       <details>
         <summary><b>Sezione POST (opzionale)</b></summary>
 
-        <label>Anno di Rilevazione (POST)</label>
-        <input name="annoPost" placeholder="Es. 2026" />
+        <label>Anno di Rilevazione (POST) — formato data</label>
+        <input name="annoRilevazionePost" type="date" />
 
         <label>Esito POST</label>
-        <input name="esitoPost" placeholder="Es. Obiettivo raggiunto 100%" />
+        <select name="esitoPost">
+          <option value="" selected>—</option>
+          <option>RAGGIUNTO</option>
+          <option>NON RAGGIUNTO</option>
+        </select>
 
         <label>SWOT (POST)</label>
-        <input name="swotPost" placeholder="Es. 50 - MEDIA OPPORTUNITA (E)" />
+        <select name="swotPost">
+          <option value="" selected>—</option>
+          <option>25 - BASSA MINACCIA (E)</option>
+          <option>50 - MEDIA MINACCIA (E)</option>
+          <option>75 - ESTREMA MINACCIA (E)</option>
+          <option>25 - BASSA OPPORTUNITA (E)</option>
+          <option>50 - MEDIA OPPORTUNITA (E)</option>
+          <option>100 - ESTREMA OPPORTUNITA (E)</option>
+          <option>25 - BASSA DEBOLEZZA (I)</option>
+          <option>50 - MEDIA DEBOLEZZA (I)</option>
+          <option>100 - ESTREMA DEBOLEZZA (I)</option>
+          <option>25 - BASSA FORZA (I)</option>
+          <option>50 - MEDIA FORZA (I)</option>
+          <option>100 - ESTREMA FORZA (I)</option>
+        </select>
 
         <label>Fattore Interno - Esterno (POST)</label>
-        <input name="fattoreIEPost" placeholder="Es. Fattore Esterno" />
+        <select name="fattoreIePost">
+          <option value="" selected>—</option>
+          <option>Fattore Interno</option>
+          <option>Fattore Esterno</option>
+        </select>
 
         <label>R / O (POST)</label>
-        <input name="roPost" placeholder="Es. OPPORTUNITA' / RISCHIO" />
+        <select name="roPost">
+          <option value="" selected>—</option>
+          <option>RISCHIO</option>
+          <option>OPPORTUNITA'</option>
+        </select>
 
         <label>Commento POST</label>
         <textarea name="commentoPost" placeholder="Note / motivazioni / cambiamenti"></textarea>
@@ -85,30 +177,27 @@
   </div>
 
   <div class="card">
-    <h3 style="margin:0 0 10px;">Viewer (20 righe, 14 colonne)</h3>
-    <p class="muted">Il viewer è una pagina locale <b>viewer.html</b> (GitHub Pages) che legge i dati da Apps Script.</p>
+    <h3 style="margin:0 0 10px;">Viewer (max 20 righe)</h3>
+    <p class="muted">Il viewer è <b>viewer.html</b> e riceve l’endpoint da questa pagina.</p>
 
-    <!-- NIENTE src qui: lo setta il JS, così eviti duplicazioni -->
     <iframe id="sheetFrame" loading="lazy"></iframe>
 
     <div class="actions">
       <button id="viewerRefreshBtn" type="button" class="secondary">Aggiorna viewer</button>
-      <span class="muted">Forza refresh (cache-bust) del viewer.</span>
+      <span class="muted">Forza refresh (cache-bust).</span>
     </div>
   </div>
 
   <script>
-    // ===== CONFIG =====
+    // ===== CONFIG (UNICO PUNTO DA MODIFICARE) =====
     const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzAbGtc7m50w5ZKkHUB_M0GFPs5dn6Zi_ymdXAVtRwANL2ek-JbIdVLnimOXf9ZTtW1/exec";
     const API_KEY = "Djungo-Test-2026-01-17-chiave-lunga-XYZ";
 
-    // ===== utilities =====
     function setMsg(el, msg, cls) {
       el.className = cls || "muted";
       el.textContent = msg;
     }
 
-    // JSONP helper
     function jsonp(url) {
       return new Promise((resolve, reject) => {
         const cbName = "cb_" + Math.random().toString(36).slice(2);
@@ -131,18 +220,22 @@
       });
     }
 
-    // ===== iframe init (robusto su subpath GitHub Pages) =====
+    // ===== viewer iframe =====
     const sheetFrame = document.getElementById("sheetFrame");
     const viewerRefreshBtn = document.getElementById("viewerRefreshBtn");
 
     function currentDirBase() {
-      // es: /cliente-form-modus/index.html -> /cliente-form-modus/
       return window.location.pathname.replace(/[^\/]*$/, "");
     }
 
     function viewerUrl(cacheBust) {
       const base = currentDirBase();
       const u = new URL(base + "viewer.html", window.location.origin);
+
+      // passaggio config a viewer.html
+      u.searchParams.set("webApp", WEB_APP_URL);
+      u.searchParams.set("apiKey", API_KEY);
+
       if (cacheBust) u.searchParams.set("_", Date.now().toString());
       return u.toString();
     }
@@ -170,33 +263,34 @@
       u.searchParams.set("mode", "insert");
       u.searchParams.set("apiKey", API_KEY);
 
-      // campi ANTE
+      // ANTE
       u.searchParams.set("anno", (fd.get("anno") || "").toString().trim());
       u.searchParams.set("contesto", (fd.get("contesto") || "").toString().trim());
       u.searchParams.set("attivita", (fd.get("attivita") || "").toString().trim());
       u.searchParams.set("partiInteressate", (fd.get("partiInteressate") || "").toString().trim());
       u.searchParams.set("obiettivoAnte", (fd.get("obiettivoAnte") || "").toString().trim());
       u.searchParams.set("swotAnte", (fd.get("swotAnte") || "").toString().trim());
-      u.searchParams.set("fattoreIEAnte", (fd.get("fattoreIEAnte") || "").toString().trim());
+      u.searchParams.set("fattoreIeAnte", (fd.get("fattoreIeAnte") || "").toString().trim());
       u.searchParams.set("roAnte", (fd.get("roAnte") || "").toString().trim());
 
-      // campi POST (opzionali)
-      u.searchParams.set("annoPost", (fd.get("annoPost") || "").toString().trim());
+      // POST (opzionale)
+      u.searchParams.set("annoRilevazionePost", (fd.get("annoRilevazionePost") || "").toString().trim()); // YYYY-MM-DD
       u.searchParams.set("esitoPost", (fd.get("esitoPost") || "").toString().trim());
       u.searchParams.set("swotPost", (fd.get("swotPost") || "").toString().trim());
-      u.searchParams.set("fattoreIEPost", (fd.get("fattoreIEPost") || "").toString().trim());
+      u.searchParams.set("fattoreIePost", (fd.get("fattoreIePost") || "").toString().trim());
       u.searchParams.set("roPost", (fd.get("roPost") || "").toString().trim());
       u.searchParams.set("commentoPost", (fd.get("commentoPost") || "").toString().trim());
 
       try {
         const resp = await jsonp(u.toString());
+        console.log("INSERT resp =", resp);
+
         if (!resp || resp.ok !== true) {
           setMsg(insertStatus, "Errore: " + (resp && resp.error ? resp.error : "Risposta non valida"), "err");
-          insertBtn.disabled = false;
           return;
         }
 
-        setMsg(insertStatus, `Inserito (ID=${resp.id}). Aggiorno viewer…`, "ok");
+        setMsg(insertStatus, `Inserito (ID=${resp.id || "?"}). Aggiorno viewer…`, "ok");
         insertForm.reset();
         loadViewer(true);
 
