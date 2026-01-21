@@ -276,6 +276,7 @@
       const u = new URL(base + "viewer.html", window.location.origin);
       u.searchParams.set("webApp", WEB_APP_URL);
       u.searchParams.set("apiKey", API_KEY);
+      u.searchParams.set("debug", "1"); // <<< SOLO PER DEBUG
       if (cacheBust) u.searchParams.set("_", Date.now().toString());
       return u.toString();
     }
