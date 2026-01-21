@@ -45,6 +45,8 @@
 
     iframe { width: 100%; height: 620px; border: 1px solid #ddd; border-radius: 10px; background: #fff; }
     .hr { height:1px; background:#e5e5e5; margin:12px 0; }
+
+    
   </style>
 </head>
 
@@ -205,10 +207,11 @@
     </p>
 
     <iframe
-      id="sheetFrame"
-      src="https://docs.google.com/spreadsheets/d/e/2PACX-1vTUnecuOwa6Pt3oHkGnR16o4bsQ0VV_MsdhZNx2cpz3fbpPFLqLur6B94ujVXdOPlTNFas_qc32UX3L/pubhtml?gid=1648418620&amp;single=true&amp;widget=true&amp;headers=false"
-      loading="lazy"
-    ></iframe>
+  id="sheetFrame"
+  src="https://docs.google.com/spreadsheets/d/e/2PACX-1vTUnecuOwa6Pt3oHkGnR16o4bsQ0VV_MsdhZNx2cpz3fbpPFLqLur6B94ujVXdOPlTNFas_qc32UX3L/pubhtml?gid=237157272&amp;single=true&amp;widget=true&amp;headers=false"
+  loading="lazy"
+></iframe>
+
 
     <div class="actions">
       <button id="viewerRefreshBtn" type="button" class="secondary">Aggiorna viewer</button>
@@ -222,7 +225,8 @@
     const API_KEY = "Djungo-Test-2026-01-17-chiave-lunga-XYZ";
 
     // iframe pubblicato (punta al foglio/Tab che vuoi mostrare)
-    const FRAME_BASE_SRC = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTUnecuOwa6Pt3oHkGnR16o4bsQ0VV_MsdhZNx2cpz3fbpPFLqLur6B94ujVXdOPlTNFas_qc32UX3L/pubhtml?gid=1648418620&single=true&widget=true&headers=false";
+    const FRAME_BASE_SRC = "const FRAME_BASE_SRC = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTUnecuOwa6Pt3oHkGnR16o4bsQ0VV_MsdhZNx2cpz3fbpPFLqLur6B94ujVXdOPlTNFas_qc32UX3L/pubhtml?gid=237157272&single=true&widget=true&headers=false";
+";
 
     function setMsg(el, msg, cls) {
       el.className = cls || "muted";
@@ -286,6 +290,7 @@
       if (!v) { pillFactorEl.textContent = "—"; return; }
       const [pct, label] = v.split("|");
       pillFactorEl.textContent = `${pct}% • ${label}`;
+
     });
 
     insertForm.addEventListener("submit", async (ev) => {
