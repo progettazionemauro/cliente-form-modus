@@ -3,12 +3,11 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>ISO 9001 - Contesto & SWOT (Viewer + Form)</title>
+  <title>ISO 9001 - Contesto & SWOT (Input + Viewer)</title>
   <style>
     body { font-family: Arial, sans-serif; max-width: 1200px; margin: 28px auto; padding: 0 16px; }
     h1 { margin: 0 0 6px; }
     .muted { color: #666; font-size: 0.95rem; margin: 0 0 16px; }
-
     .card { border: 1px solid #e5e5e5; border-radius: 10px; padding: 14px; background: #fafafa; margin-bottom: 14px; }
     label { display:block; margin: 10px 0 6px; font-weight: 600; }
     input, select, textarea {
@@ -21,7 +20,6 @@
       background: #fff;
     }
     textarea { min-height: 90px; resize: vertical; }
-
     .actions { margin-top: 12px; display:flex; gap: 10px; align-items:center; flex-wrap: wrap; }
     button {
       padding: 9px 12px;
@@ -33,40 +31,32 @@
       font-weight: 600;
     }
     button.secondary { background: #666; }
-    button.danger { background: #b00; }
     button:disabled { opacity: 0.6; cursor: not-allowed; }
-
     .ok { color: #0a6; font-weight: 600; }
     .err { color: #b00; font-weight: 600; }
 
-    .pill { display:inline-block; padding: 4px 8px; border-radius: 999px; background:#eee; font-size: 12px; margin-left: 8px; color:#333; }
-    .hint { font-size: 0.9rem; color: #555; margin-top: 6px; }
-    .hidden { display:none; }
+    details { background:#fff; border:1px solid #e5e5e5; border-radius:10px; padding:10px; margin-top:12px; }
+    summary { cursor:pointer; font-weight:700; }
 
-    iframe { width: 100%; height: 620px; border: 1px solid #ddd; border-radius: 10px; background: #fff; }
-    .hr { height:1px; background:#e5e5e5; margin:12px 0; }
-
-    
+    iframe { width: 100%; height: 520px; border: 1px solid #ddd; border-radius: 10px; background: #fff; }
   </style>
 </head>
 
 <body>
   <h1>ISO 9001 – Contesto & SWOT</h1>
   <p class="muted">
-    Inserisci nuove righe su Google Sheet e usa il viewer (solo lettura) per verificare la riga inserita.
+    Inserisci una nuova riga in <b>SWOT_input</b>. Il viewer sotto mostra solo le prime <b>20 righe</b> e le sole <b>14 colonne</b>.
   </p>
 
-  <!-- FORM: INSERT / UPDATE / DELETE -->
   <div class="card">
     <h3 style="margin:0 0 10px;">Nuova riga (Insert)</h3>
 
     <form id="insertForm" autocomplete="on">
-      <label for="dataRilevazione">Data rilevazione</label>
-      <input id="dataRilevazione" name="dataRilevazione" type="date" required />
-      <div class="hint">La data viene inviata come YYYY-MM-DD al backend Apps Script.</div>
+      <label for="anno">Anno</label>
+      <input id="anno" name="anno" type="number" min="2000" max="2100" required placeholder="2025" />
 
-      <label for="areaContesto">Area contesto</label>
-      <select id="areaContesto" name="areaContesto" required>
+      <label for="contesto">Contesto</label>
+      <select id="contesto" name="contesto" required>
         <option value="" selected disabled>Seleziona…</option>
         <option>ECONOMICO</option>
         <option>TECNOLOGICO</option>
@@ -118,31 +108,70 @@
         <option>MEDIA / OPINIONE PUBBLICA</option>
       </select>
 
-      <label for="obiettivo">Obiettivo</label>
-      <textarea id="obiettivo" name="obiettivo" required placeholder="Obiettivo collegato al fattore (azione, risultato, KPI)…"></textarea>
+      <label for="obiettivoAnte">Obiettivo (Ante)</label>
+      <textarea id="obiettivoAnte" name="obiettivoAnte" required placeholder="Obiettivo pianificato (ante)…"></textarea>
 
-      <label for="fattoreAnte">Fattore (ante) <span class="pill" id="pillFactor">—</span></label>
-      <select id="fattoreAnte" name="fattoreAnte" required>
+      <label for="swotAnte">SWOT (Ante)</label>
+      <select id="swotAnte" name="swotAnte" required>
         <option value="" selected disabled>Seleziona…</option>
-        <option value="25|BASSA MINACCIA (E)">25 - BASSA MINACCIA (E)</option>
-        <option value="50|MEDIA MINACCIA (E)">50 - MEDIA MINACCIA (E)</option>
-        <option value="75|ESTREMA MINACCIA (E)">75 - ESTREMA MINACCIA (E)</option>
-
-        <option value="25|BASSA OPPORTUNITA (E)">25 - BASSA OPPORTUNITA (E)</option>
-        <option value="50|MEDIA OPPORTUNITA (E)">50 - MEDIA OPPORTUNITA (E)</option>
-        <option value="100|ESTREMA OPPORTUNITA (E)">100 - ESTREMA OPPORTUNITA (E)</option>
-
-        <option value="25|BASSA DEBOLEZZA (I)">25 - BASSA DEBOLEZZA (I)</option>
-        <option value="50|MEDIA DEBOLEZZA (I)">50 - MEDIA DEBOLEZZA (I)</option>
-        <option value="100|ESTREMA DEBOLEZZA (I)">100 - ESTREMA DEBOLEZZA (I)</option>
-
-        <option value="25|BASSA FORZA (I)">25 - BASSA FORZA (I)</option>
-        <option value="50|MEDIA FORZA (I)">50 - MEDIA FORZA (I)</option>
-        <option value="100|ESTREMA FORZA (I)">100 - ESTREMA FORZA (I)</option>
+        <option>FORZA</option>
+        <option>DEBOLEZZA</option>
+        <option>OPPORTUNITÀ</option>
+        <option>MINACCIA</option>
       </select>
 
+      <label for="fattoreAnte">Fattore Interno - Esterno (Ante)</label>
+      <select id="fattoreAnte" name="fattoreAnte" required>
+        <option value="" selected disabled>Seleziona…</option>
+        <option>Fattore Interno</option>
+        <option>Fattore Esterno</option>
+      </select>
+
+      <label for="roAnte">R / O (Ante)</label>
+      <select id="roAnte" name="roAnte" required>
+        <option value="" selected disabled>Seleziona…</option>
+        <option>RISCHIO</option>
+        <option>OPPORTUNITÀ</option>
+      </select>
+
+      <details>
+        <summary>Sezione POST (opzionale)</summary>
+
+        <label for="annoRilevazionePost">Anno di Rilevazione (POST)</label>
+        <input id="annoRilevazionePost" name="annoRilevazionePost" type="number" min="2000" max="2100" placeholder="2026" />
+
+        <label for="esitoPost">Esito POST</label>
+        <textarea id="esitoPost" name="esitoPost" placeholder="Esito / evidenza oggettiva…"></textarea>
+
+        <label for="swotPost">SWOT (POST)</label>
+        <select id="swotPost" name="swotPost">
+          <option value="" selected>(vuoto)</option>
+          <option>FORZA</option>
+          <option>DEBOLEZZA</option>
+          <option>OPPORTUNITÀ</option>
+          <option>MINACCIA</option>
+        </select>
+
+        <label for="fattorePost">Fattore Interno - Esterno (POST)</label>
+        <select id="fattorePost" name="fattorePost">
+          <option value="" selected>(vuoto)</option>
+          <option>Fattore Interno</option>
+          <option>Fattore Esterno</option>
+        </select>
+
+        <label for="roPost">R / O (POST)</label>
+        <select id="roPost" name="roPost">
+          <option value="" selected>(vuoto)</option>
+          <option>RISCHIO</option>
+          <option>OPPORTUNITÀ</option>
+        </select>
+
+        <label for="commentoPost">Commento POST</label>
+        <textarea id="commentoPost" name="commentoPost" placeholder="Commento finale…"></textarea>
+      </details>
+
       <!-- Honeypot -->
-      <div class="hidden">
+      <div style="display:none;">
         <label>Se sei umano lascia vuoto</label>
         <input name="hp" tabindex="-1" autocomplete="off" />
       </div>
@@ -152,98 +181,47 @@
         <span id="insertStatus" class="muted"></span>
       </div>
     </form>
-
-    <div class="hr"></div>
-
-    <h3 style="margin:0 0 10px;">Aggiorna riga (Update)</h3>
-    <p class="muted">
-      Funzione predisposta per sviluppi futuri (attualmente disabilitata lato JavaScript).
-    </p>
-
-    <form id="updateForm">
-      <label>recordId</label>
-      <input name="recordId" placeholder="(futuro)">
-
-      <label>Attività (opzionale)</label>
-      <textarea name="attivita" placeholder="(futuro)"></textarea>
-
-      <label>Obiettivo (opzionale)</label>
-      <textarea name="obiettivo" placeholder="(futuro)"></textarea>
-
-      <div class="actions">
-        <button id="updateBtn" type="submit" class="secondary" disabled>Aggiorna</button>
-        <span id="updateStatus" class="muted">Disabilitato (fase successiva).</span>
-      </div>
-    </form>
-
-    <div class="hr"></div>
-
-    <h3 style="margin:0 0 10px;">Elimina riga (Delete)</h3>
-    <p class="muted">
-      Funzione predisposta per sviluppi futuri (attualmente disabilitata lato JavaScript).
-    </p>
-
-    <form id="deleteForm">
-      <label>recordId</label>
-      <input name="recordId" placeholder="(futuro)">
-
-      <label style="font-weight:400;">
-        <input type="checkbox" name="confirm" disabled>
-        Confermo eliminazione
-      </label>
-
-      <div class="actions">
-        <button id="deleteBtn" type="submit" class="danger" disabled>Elimina</button>
-        <span id="deleteStatus" class="muted">Disabilitato (fase successiva).</span>
-      </div>
-    </form>
   </div>
 
-  <!-- VIEWER SOTTO -->
   <div class="card">
-    <h3 style="margin:0 0 10px;">Viewer (Google Sheet – sola lettura)</h3>
+    <h3 style="margin:0 0 10px;">Viewer (20 righe, 14 colonne)</h3>
     <p class="muted">
-      Questo è il foglio pubblicato. Dopo un inserimento, usa “Aggiorna viewer” per forzare il refresh.
+      Il viewer legge direttamente <b>SWOT_input</b> e mostra solo un estratto (limit 20).
     </p>
 
-    <iframe
-  id="sheetFrame"
-  src="https://docs.google.com/spreadsheets/d/e/2PACX-1vTUnecuOwa6Pt3oHkGnR16o4bsQ0VV_MsdhZNx2cpz3fbpPFLqLur6B94ujVXdOPlTNFas_qc32UX3L/pubhtml?gid=237157272&amp;single=true&amp;widget=true&amp;headers=false"
-  loading="lazy"
-></iframe>
-
+    <iframe id="sheetFrame" loading="lazy"></iframe>
 
     <div class="actions">
       <button id="viewerRefreshBtn" type="button" class="secondary">Aggiorna viewer</button>
-      <span class="muted" id="viewerHint">Nota: il viewer può avere cache; questo pulsante forza il refresh dell’iframe.</span>
+      <span class="muted">Forza refresh (cache-bust) del viewer.</span>
     </div>
   </div>
 
   <script>
     // ===== CONFIG =====
-    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxysWih1qJkwehGqOQ6wPXGLLs3TO_j0KOGDe-v4J-EIKNZdCI354vZ1cVStOxq0fJN/exec";
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbw2qic068iX9kN-RQUPY-5umBrfmPDPzaoPtECa3u40Zae0FXnefG6q2KUh9HfwLgAS/exec";
     const API_KEY = "Djungo-Test-2026-01-17-chiave-lunga-XYZ";
 
-    // iframe pubblicato (punta al foglio/Tab che vuoi mostrare)
-    const FRAME_BASE_SRC = "const FRAME_BASE_SRC = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTUnecuOwa6Pt3oHkGnR16o4bsQ0VV_MsdhZNx2cpz3fbpPFLqLur6B94ujVXdOPlTNFas_qc32UX3L/pubhtml?gid=237157272&single=true&widget=true&headers=false";
-";
+    // Viewer locale (GitHub Pages) che limita righe/colonne in modo robusto
+    const VIEWER_PAGE = "viewer.html";
 
     function setMsg(el, msg, cls) {
       el.className = cls || "muted";
       el.textContent = msg;
     }
 
-    // ===== Viewer refresh (cache bust) =====
+    // ===== iframe init + refresh =====
     const sheetFrame = document.getElementById("sheetFrame");
     const viewerRefreshBtn = document.getElementById("viewerRefreshBtn");
 
     function refreshViewer() {
-      const url = new URL(FRAME_BASE_SRC);
+      const url = new URL(VIEWER_PAGE, window.location.href);
       url.searchParams.set("_", Date.now().toString());
       sheetFrame.src = url.toString();
     }
 
     viewerRefreshBtn.addEventListener("click", refreshViewer);
+    refreshViewer(); // init
 
     // ===== JSONP helper =====
     function jsonp(url) {
@@ -282,16 +260,6 @@
     const insertForm = document.getElementById("insertForm");
     const insertBtn = document.getElementById("insertBtn");
     const insertStatus = document.getElementById("insertStatus");
-    const fattoreAnteEl = document.getElementById("fattoreAnte");
-    const pillFactorEl = document.getElementById("pillFactor");
-
-    fattoreAnteEl.addEventListener("change", () => {
-      const v = (fattoreAnteEl.value || "");
-      if (!v) { pillFactorEl.textContent = "—"; return; }
-      const [pct, label] = v.split("|");
-      pillFactorEl.textContent = `${pct}% • ${label}`;
-
-    });
 
     insertForm.addEventListener("submit", async (ev) => {
       ev.preventDefault();
@@ -300,36 +268,56 @@
 
       const fd = new FormData(insertForm);
 
-      // Inviamo la data ISO direttamente (YYYY-MM-DD)
-      const dataRilevazione = (fd.get("dataRilevazione") || "").toString().trim();
-      const areaContesto = (fd.get("areaContesto") || "").toString().trim();
-      const attivita = (fd.get("attivita") || "").toString().trim();
-      const partiInteressate = (fd.get("partiInteressate") || "").toString().trim();
-      const obiettivo = (fd.get("obiettivo") || "").toString().trim();
-      const fattoreAnte = (fd.get("fattoreAnte") || "").toString().trim();
-      const hp = (fd.get("hp") || "").toString();
+      const payload = {
+        anno: (fd.get("anno") || "").toString().trim(),
+        contesto: (fd.get("contesto") || "").toString().trim(),
+        attivita: (fd.get("attivita") || "").toString().trim(),
+        partiInteressate: (fd.get("partiInteressate") || "").toString().trim(),
+        obiettivoAnte: (fd.get("obiettivoAnte") || "").toString().trim(),
+        swotAnte: (fd.get("swotAnte") || "").toString().trim(),
+        fattoreAnte: (fd.get("fattoreAnte") || "").toString().trim(),
+        roAnte: (fd.get("roAnte") || "").toString().trim(),
 
-      if (!dataRilevazione || !areaContesto || !attivita || !partiInteressate || !obiettivo || !fattoreAnte) {
-        setMsg(insertStatus, "Compila tutti i campi obbligatori.", "err");
+        // POST opzionale
+        annoRilevazionePost: (fd.get("annoRilevazionePost") || "").toString().trim(),
+        esitoPost: (fd.get("esitoPost") || "").toString().trim(),
+        swotPost: (fd.get("swotPost") || "").toString().trim(),
+        fattorePost: (fd.get("fattorePost") || "").toString().trim(),
+        roPost: (fd.get("roPost") || "").toString().trim(),
+        commentoPost: (fd.get("commentoPost") || "").toString().trim(),
+
+        hp: (fd.get("hp") || "").toString()
+      };
+
+      // check minimo (ANTE)
+      if (!payload.anno || !payload.contesto || !payload.attivita || !payload.partiInteressate ||
+          !payload.obiettivoAnte || !payload.swotAnte || !payload.fattoreAnte || !payload.roAnte) {
+        setMsg(insertStatus, "Compila tutti i campi obbligatori (ANTE).", "err");
         insertBtn.disabled = false;
         return;
       }
 
-      const [factorPctStr, factorLabel] = fattoreAnte.split("|");
-      const factorPct = Number(factorPctStr || 0);
-
       const u = new URL(WEB_APP_URL);
       u.searchParams.set("mode", "insert");
       u.searchParams.set("apiKey", API_KEY);
-      u.searchParams.set("hp", hp);
 
-      u.searchParams.set("dataRilevazione", dataRilevazione); // YYYY-MM-DD
-      u.searchParams.set("areaContesto", areaContesto);
-      u.searchParams.set("attivita", attivita);
-      u.searchParams.set("partiInteressate", partiInteressate);
-      u.searchParams.set("obiettivo", obiettivo);
-      u.searchParams.set("factorPct", String(factorPct));
-      u.searchParams.set("factorLabel", factorLabel);
+      // parametri
+      u.searchParams.set("hp", payload.hp);
+      u.searchParams.set("anno", payload.anno);
+      u.searchParams.set("contesto", payload.contesto);
+      u.searchParams.set("attivita", payload.attivita);
+      u.searchParams.set("partiInteressate", payload.partiInteressate);
+      u.searchParams.set("obiettivoAnte", payload.obiettivoAnte);
+      u.searchParams.set("swotAnte", payload.swotAnte);
+      u.searchParams.set("fattoreAnte", payload.fattoreAnte);
+      u.searchParams.set("roAnte", payload.roAnte);
+
+      u.searchParams.set("annoRilevazionePost", payload.annoRilevazionePost);
+      u.searchParams.set("esitoPost", payload.esitoPost);
+      u.searchParams.set("swotPost", payload.swotPost);
+      u.searchParams.set("fattorePost", payload.fattorePost);
+      u.searchParams.set("roPost", payload.roPost);
+      u.searchParams.set("commentoPost", payload.commentoPost);
 
       try {
         const resp = await jsonp(u.toString());
@@ -342,7 +330,6 @@
 
         setMsg(insertStatus, "Inserito. Aggiorno il viewer…", "ok");
         insertForm.reset();
-        pillFactorEl.textContent = "—";
         refreshViewer();
 
       } catch (e) {
@@ -351,9 +338,6 @@
         insertBtn.disabled = false;
       }
     });
-
-    // ===== UPDATE / DELETE =====
-    // Disabilitati per ora (form presenti ma bottoni disabled).
   </script>
 </body>
 </html>
