@@ -338,7 +338,7 @@
   u.searchParams.set("fattoreIEAnte", ieAnte);
 
   // R/O (se vuoi che lo calcoli Sheets, puoi anche NON inviarlo; ma se Code.gs lo richiede, invialo)
-  u.searchParams.set("roAnte", (fd.get("roAnte") || "").toString().trim());
+  // u.searchParams.set("roAnte", (fd.get("roAnte") || "").toString().trim());
 
   // POST (opzionale) — attenzione: nel tuo HTML si chiama annoRilevazionePost
   u.searchParams.set("annoRilevazionePost", (fd.get("annoRilevazionePost") || "").toString().trim()); // YYYY-MM-DD oppure "" se vuoto
@@ -348,7 +348,7 @@
   // >>> AUTO derivato da SWOT POST <<<
   u.searchParams.set("fattoreIEPost", iePost);
 
-  u.searchParams.set("roPost", (fd.get("roPost") || "").toString().trim());
+  // u.searchParams.set("roPost", (fd.get("roPost") || "").toString().trim());
   u.searchParams.set("commentoPost", (fd.get("commentoPost") || "").toString().trim());
 
   try {
