@@ -442,9 +442,12 @@ function setSelectSmart(selectId, incomingText) {
     u.searchParams.set("swotPost", swotPostVal);
     u.searchParams.set("commentoPost", (fd.get("commentoPost") || "").toString().trim());
 
+    console.log("INSERT URL =", u.toString());
+
+
     try {
-      const resp = await jsonp(u.toString());
-      console.log("INSERT resp =", JSON.stringify(resp, null, 2));
+    const resp = await jsonp(u.toString());
+    console.log("INSERT resp =", JSON.stringify(resp, null, 2));
 
       if (!resp || resp.ok !== true) {
         setMsg(insertStatus, "Errore: " + (resp && resp.error ? resp.error : "Risposta non valida"), "err");
