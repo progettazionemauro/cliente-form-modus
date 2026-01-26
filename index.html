@@ -329,33 +329,73 @@
   loadViewer(false);
 
   // ===== helper popolamento form (da record backend) =====
-  function setField(id, value) {
-    const el = document.getElementById(id);
-    if (!el) return;
-    el.value = (value ?? "").toString();
+function setFieldValue(id, value) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.value = (value ?? "").toString();
+}
+
+// normalizzazione robusta per matchare option anche se cambia un dettaglio (spazi, apostrofi, ecc.)
+function normText_(s) {
+  return String(s ?? "")
+    .trim()
+    .toUpperCase()
+    .replace(/\s+/g, " ")
+    .replace(/’/g, "'"); // apostrofo “curvo” -> apostrofo semplice
+}
+
+// set per SELECT: prova match esatto, poi match normalizzato sul testo dell’option
+function setSelectSmart(selectId, incomingText) {
+  const el = document.getElementById(selectId);
+  if (!el) return;
+
+  const raw = String(incomingText ?? "").trim();
+  if (!raw) { el.value = ""; return; }
+
+  // 1) match diretto (se l'option value è uguale al testo)
+  el.value = raw;
+  if (el.value === raw) return;
+
+  // 2) match sul textContent normalizzato delle option
+  const target = normText_(raw);
+  const opts = Array.from(el.options || []);
+  const found = opts.find(o => normText_(o.textContent) === target);
+
+  if (found) {
+    el.value = found.value; // in questo HTML value coincide col testo, ma così resti robusto
+    return;
   }
+
+  // 3) fallback: niente match → azzero (così lo vedi subito) e loggo
+  console.warn(`setSelectSmart: nessun match per #${selectId}`, raw);
+  el.value = "";
+}
 
   function populateFormFromRecord(rec) {
-    // rec usa le chiavi HEADERS del backend
-    setField("anno", rec["Anno"]);
-    setField("contesto", rec["Contesto"]);
-    setField("attivita", rec["Attività"]);
-    setField("partiInteressate", rec["Parti interessate"]);
-    setField("obiettivoAnte", rec["Obiettivo (Ante)"]);
-    setField("swotAnte", rec["SWOT (Ante)"]);
+  // TEXTAREA / INPUT
+  setFieldValue("attivita", rec["Attività"]);
+  setFieldValue("obiettivoAnte", rec["Obiettivo (Ante)"]);
+  setFieldValue("commentoPost", rec["Commento POST"]);
 
-    fattoreIEAnteEl.value = deriveIE(swotAnteEl.value);
-    roAnteEl.value = deriveRO(swotAnteEl.value);
+  // SELECT (smart: deve matchare le option)
+  setSelectSmart("anno", rec["Anno"]);
+  setSelectSmart("contesto", rec["Contesto"]);
+  setSelectSmart("partiInteressate", rec["Parti interessate"]);
+  setSelectSmart("swotAnte", rec["SWOT (Ante)"]);
 
-    setField("annoPost", rec["Anno di Rilevazione (POST)"]);
-    setField("esitoPost", rec["Esito POST"]);
-    setField("swotPost", rec["SWOT (POST)"]);
+  // auto-derivazioni ANTE
+  fattoreIEAnteEl.value = deriveIE(swotAnteEl.value);
+  roAnteEl.value = deriveRO(swotAnteEl.value);
 
-    fattoreIEPostEl.value = deriveIE(swotPostEl.value);
-    roPostEl.value = deriveRO(swotPostEl.value);
+  // POST
+  setSelectSmart("annoPost", rec["Anno di Rilevazione (POST)"]);
+  setSelectSmart("esitoPost", rec["Esito POST"]);
+  setSelectSmart("swotPost", rec["SWOT (POST)"]);
 
-    setField("commentoPost", rec["Commento POST"]);
-  }
+  // auto-derivazioni POST
+  fattoreIEPostEl.value = deriveIE(swotPostEl.value);
+  roPostEl.value = deriveRO(swotPostEl.value);
+}
 
   // ===== INSERT =====
   insertForm.addEventListener("submit", async (ev) => {
