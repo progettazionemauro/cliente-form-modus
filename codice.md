@@ -270,3 +270,120 @@ function jsonp_(cb, obj) {
 function text_(s) {
   return ContentService.createTextOutput(String(s));
 }
+
+/***************
+ * Funzione di formattazione
+ ***************/
+
+function formatSWOTSheet_() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const sh = ss.getSheetByName(SHEET_NAME);
+  if (!sh) throw new Error("Sheet not found: " + SHEET_NAME);
+
+  // Colonne attese (max 15)
+  const lc = Math.min(sh.getLastColumn(), HEADERS.length);
+  if (lc < 1) return;
+
+  // Header detection / creation
+  const a1 = String(sh.getRange(1, 1).getValue() || "").toUpperCase();
+  const hasHeader = (a1 === "ID");
+  if (!hasHeader) {
+    sh.getRange(1, 1, 1, lc).setValues([HEADERS.slice(0, lc)]);
+  }
+
+  const lr = sh.getLastRow();
+  if (lr < 1) return;
+
+  // === 1) Header style ===
+  sh.setFrozenRows(1);
+  sh.getRange(1, 1, 1, lc)
+    .setFontWeight("bold")
+    .setBackground("#f3d36b")
+    .setHorizontalAlignment("center")
+    .setVerticalAlignment("middle")
+    .setWrap(true);
+
+  // === 2) Reset area data (solo fino a lr) e banding righe alternate (visibile) ===
+  if (lr >= 2) {
+    const data = sh.getRange(2, 1, lr - 1, lc);
+
+    // Reset sfondi e bordi nell’area dati (così i colori "si vedono")
+    data.setBackground(null);
+    data.setBorder(false, false, false, false, false, false);
+
+    // Banding: rimuovo eventuali banding precedenti e applico il mio
+    sh.getBandings().forEach(b => b.remove());
+    const banding = data.applyRowBanding();
+    banding.setFirstRowColor("#e8f5e9");   // verde chiarissimo
+    banding.setSecondRowColor("#c8e6c9");  // verde chiaro
+    banding.setHeaderRowColor("#f3d36b");
+  }
+
+  // === 3) Wrap (a capo automatico) mirato per colonne testo (Attività, Obiettivo, Commento) ===
+  // Indici 1-based: 4=Attività, 6=Obiettivo, 15=Commento POST
+  const wrapCols = [4, 6, 15];
+  wrapCols.forEach(col => {
+    if (col <= lc && lr >= 2) {
+      sh.getRange(2, col, lr - 1, 1).setWrap(true);
+    }
+  });
+
+  // Allineamento generale
+  sh.getRange(2, 1, Math.max(0, lr - 1), lc).setVerticalAlignment("top");
+
+  // === 4) Conditional formatting su R/O ANTE e POST ===
+  // 9 = R/O ANTE ; 14 = R/O POST
+  const colROAnte = 9;
+  const colROPost = 14;
+
+  // Togli SOLO regole che insistono su col 9 o col 14, e ricreale pulite
+  const keep = sh.getConditionalFormatRules().filter(rule => {
+    return !rule.getRanges().some(r => {
+      const c = r.getColumn();
+      return (c === colROAnte || c === colROPost);
+    });
+  });
+
+  if (lr >= 2) {
+    const rAnte = sh.getRange(2, colROAnte, lr - 1, 1);
+    const rPost = sh.getRange(2, colROPost, lr - 1, 1);
+
+    const riskBg = "#f8d7da";  // alert
+    const oppBg  = "#d4edda";  // tranquillo
+
+    keep.push(
+      SpreadsheetApp.newConditionalFormatRule()
+        .whenTextEqualTo("RISCHIO")
+        .setBackground(riskBg)
+        .setFontWeight("bold")
+        .setRanges([rAnte, rPost])
+        .build()
+    );
+
+    keep.push(
+      SpreadsheetApp.newConditionalFormatRule()
+        .whenTextEqualTo("OPPORTUNITA'")
+        .setBackground(oppBg)
+        .setFontWeight("bold")
+        .setRanges([rAnte, rPost])
+        .build()
+    );
+  }
+
+  sh.setConditionalFormatRules(keep);
+
+  // === 5) Bordi leggeri per leggibilità ===
+  if (lr >= 1) {
+    sh.getRange(1, 1, lr, lc).setBorder(true, true, true, true, true, true, "#e5e5e5", SpreadsheetApp.BorderStyle.SOLID);
+  }
+
+  // === 6) Larghezze colonne (leggibili) ===
+  if (4 <= lc) sh.setColumnWidth(4, 420);  // Attività
+  if (6 <= lc) sh.setColumnWidth(6, 420);  // Obiettivo
+  if (15 <= lc) sh.setColumnWidth(15, 380);// Commento POST
+
+  // Colonne “brevi” auto-resize
+  [2,3,5,7,8,9,10,11,12,13,14].forEach(c => {
+    if (c <= lc) sh.autoResizeColumn(c);
+  });
+}
