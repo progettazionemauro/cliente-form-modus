@@ -548,31 +548,38 @@ function setSelectSmart(selectId, incomingText) {
       }
     });
 
-    deleteBtn.addEventListener("click", async () => {
-      const id = parseInt(recordIdEl.value, 10);
-      if (!id) { setMsg(crudStatus, "Inserisci un ID valido.", "err"); return; }
+   deleteBtn.addEventListener("click", async () => {
+  const id = parseInt(recordIdEl.value, 10);
+  if (!id) { setMsg(crudStatus, "Inserisci un ID valido.", "err"); return; }
 
-      if (!confirm(`Confermi ELIMINAZIONE definitiva del record ID=${id}?`)) return;
+  if (!confirm(`Confermi ELIMINAZIONE definitiva del record ID=${id}?`)) return;
 
-      setMsg(crudStatus, "Eliminazione in corso…", "muted");
+  setMsg(crudStatus, "Eliminazione in corso…", "muted");
 
-      const u = new URL(WEB_APP_URL);
-      u.searchParams.set("mode", "delete");
-      u.searchParams.set("apiKey", API_KEY);
-      u.searchParams.set("id", String(id));
+  const u = new URL(WEB_APP_URL);
+  u.searchParams.set("mode", "delete");
+  u.searchParams.set("apiKey", API_KEY);
+  u.searchParams.set("id", String(id));
+  u.searchParams.set("_", Date.now().toString());   // cache-bust (facoltativo ma utile)
 
-      try {
-        const resp = await jsonp(u.toString());
-        if (!resp || resp.ok !== true) {
-          setMsg(crudStatus, "Errore: " + (resp?.error || "risposta non valida"), "err");
-          return;
-        }
-        setMsg(crudStatus, `Eliminato ID=${id} (row=${resp.deletedRow}).`, "ok");
-        loadViewer(true);
-      } catch (e) {
-        setMsg(crudStatus, "Errore rete/JSONP: " + e.message, "err");
-      }
-    });
+  console.log("DELETE URL =", u.toString());        // <<< QUI (posizione corretta)
+
+  try {
+    const resp = await jsonp(u.toString());
+    console.log("DELETE resp =", JSON.stringify(resp, null, 2));
+
+    if (!resp || resp.ok !== true) {
+      setMsg(crudStatus, "Errore: " + (resp?.error || "risposta non valida"), "err");
+      return;
+    }
+
+    setMsg(crudStatus, `Eliminato ID=${id} (row=${resp.deletedRow}).`, "ok");
+    loadViewer(true);
+
+  } catch (e) {
+    setMsg(crudStatus, "Errore rete/JSONP: " + e.message, "err");
+  }
+});
   }
 </script>
 </body>
